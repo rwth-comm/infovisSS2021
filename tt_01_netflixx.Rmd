@@ -21,3 +21,21 @@ netflix_titles %>% separate_rows(cast, sep = ", ")
 
 ```
 
+
+
+
+
+
+# Unsere Bearbeitung kommt hier hin
+
+```{r}
+```
+
+
+
+# Ihre Bearbeitung kommt hier hin
+
+```{r}
+
+```
+
