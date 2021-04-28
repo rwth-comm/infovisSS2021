@@ -25,6 +25,7 @@ data <- penguins %>%
   summarise(bill_length = mean(bill_length_mm),
             bill_depth = mean(bill_depth_mm),
             flipper_length = mean(flipper_length_mm)) %>% 
+  ungroup() %>% 
   column_to_rownames("species")
   
  
