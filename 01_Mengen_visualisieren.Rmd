@@ -1,0 +1,37 @@
+---
+title: "Mengen visualisieren"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(palmerpenguins)
+```
+
+
+```{r}
+penguins
+```
+
+
+```{r}
+library(fmsb)
+ 
+data <- penguins %>% 
+  na.omit() %>% 
+  select(species, bill_length_mm, bill_depth_mm, flipper_length_mm) %>% 
+  group_by(species) %>% 
+  summarise(bill_length = mean(bill_length_mm),
+            bill_depth = mean(bill_depth_mm),
+            flipper_length = mean(flipper_length_mm)) %>% 
+  column_to_rownames("species")
+  
+ 
+# To use the fmsb package, I have to add 2 lines to the dataframe: the max and min of each variable to show on the plot!
+data <- rbind(c(50,20,220),c(0,0,0), data)
+ 
+# plot with default options:
+radarchart(data)
+```
+
