@@ -1,0 +1,56 @@
+---
+title: "Netflix Data"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+netflix_titles <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-04-20/netflix_titles.csv')  %>% 
+  separate(duration, c("duration", "duration_units"), " ", convert = TRUE)
+
+
+
+# Jeden Eintrag mehrfach listen für jede Kategorie einmal
+netflix_titles %>% separate_rows(listed_in, sep = ", ")
+
+# Jeden Eintrag mehrfach listen für jeden Schauspieler einmal
+netflix_titles %>% separate_rows(cast, sep = ", ")
+
+
+```
+
+
+
+
+
+
+# Unsere Bearbeitung kommt hier hin
+
+```{r}
+```
+
+
+
+# Ihre Bearbeitung kommt hier hin
+
+```{r}
+#Festsetzung eines themes übergeordnet für alle Viszalisierungen
+theme_set(theme_light())
+#Blick in die Daten
+netflix_titles %>%
+  count(listed_in)
+
+netflix_titles_1 <- netflix_titles %>% separate_rows(listed_in, sep = ", ")
+netflix_titles_1 %>%
+  
+  count(listed_in)
+
+# Vergleich Filme vs. Serien ab 2000
+netflix_titles_1 %>%
+  filter(release_year >= 2000) %>%
+ggplot(aes(x = release_year, fill = type )) + geom_bar(position = "dodge") +
+  labs(x = "Year of Release", y = "Count of published TV Show or Movie")
+```
+
