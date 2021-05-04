@@ -1,0 +1,46 @@
+---
+title: "Netflix Data"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+netflix_titles <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-04-20/netflix_titles.csv')  %>% 
+  separate(duration, c("duration", "duration_units"), " ", convert = TRUE)
+
+
+
+# Jeden Eintrag mehrfach listen für jede Kategorie einmal
+netflix_titles %>% separate_rows(listed_in, sep = ", ")
+
+# Jeden Eintrag mehrfach listen für jeden Schauspieler einmal
+netflix_titles %>% separate_rows(cast, sep = ", ")
+
+
+```
+
+
+
+
+
+
+# Unsere Bearbeitung kommt hier hin
+
+```{r}
+```
+
+view(netflix_titles)
+
+# Ihre Bearbeitung kommt hier hin
+
+```{r}
+ggplot(netflix_titles, aes(y = fct_relevel(type, "TV Show", "Movie"), fill = type))+
+  geom_bar() + ylab(NULL) + labs(title = "Numbers of movies and tv shows on Netflix", x = NULL) 
+```
+
+```{r}
+ggplot(netflix_titles, aes(y = release_year, fill = type))+
+  geom_bar() + ylab(NULL) + labs(title = "Release year of movies and tv shows on Netflix", x = NULL)
+```
