@@ -50,6 +50,7 @@ netflix_titles_1 %>%
 # Vergleich Filme vs. Serien ab 2000
 netflix_titles_1 %>%
   filter(release_year >= 2000) %>%
-ggplot(aes(x = release_year, fill = type )) + geom_bar(position = "dodge")
+ggplot(aes(x = release_year, fill = type )) + geom_bar(position = "dodge") +
+  labs(x = "Year of Release", y = "Count of published TV Show or Movie")
 ```
 
