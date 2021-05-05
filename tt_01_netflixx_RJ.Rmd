@@ -1,0 +1,70 @@
+---
+title: "Netflix Data"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+
+netflix_titles <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-04-20/netflix_titles.csv')  %>% 
+  separate(duration, c("duration", "duration_units"), " ", convert = TRUE)
+
+
+
+# Jeden Eintrag mehrfach listen für jede Kategorie einmal
+netflix_titles %>% separate_rows(listed_in, sep = ", ")
+
+# Jeden Eintrag mehrfach listen für jeden Schauspieler einmal
+netflix_titles %>% separate_rows(cast, sep = ", ")
+
+
+```
+
+
+
+
+
+
+# Unsere Bearbeitung kommt hier hin
+
+```{r}
+```
+
+
+
+# Ihre Bearbeitung kommt hier hin
+
+
+```{r media distribution}
+table(netflix_titles$type)
+
+netflix_titles%>%
+  ggplot(aes(type,fill=type)) +
+  geom_bar() +
+  labs(x="Type of medium", y="Amount of medium available", title="Netflix media distribution")
+  
+```
+
+```{r Media releases}
+netflix_titles%>%
+  ggplot(aes(release_year, fill = type)) +
+  geom_bar() +
+  labs(x="Release year", y="Amount of media released", title="Netflix media releases")
+
+```
+
+```{r TV show length}
+netflix_titles%>%
+  filter(type=="TV Show")%>%
+  group_by(duration) -> Netflix_TVShow_duration
+
+Netflix_TVShow_duration%>%
+  ggplot(aes(duration)) +
+  geom_bar(fill="light blue") +
+  labs(x="Amount of seasons", y="Amount of series", title="Netflix TV show length") +
+  scale_x_continuous(breaks=c(1:15))
+
+```
+
