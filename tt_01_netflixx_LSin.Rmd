@@ -123,7 +123,7 @@ netflix_titles %>%
         strip.background = element_rect(colour="black",fill="white"),
         legend.title = element_blank(),
         legend.position = "bottom") 
-        
+          
 ggsave("Netflix_Vis.png")
 ```
 
