@@ -4,8 +4,9 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 library(tidyverse)
+library(cowplot)
 
 netflix_titles <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-04-20/netflix_titles.csv')  %>% 
   separate(duration, c("duration", "duration_units"), " ", convert = TRUE)
@@ -19,6 +20,7 @@ netflix_titles %>% separate_rows(listed_in, sep = ", ")
 netflix_titles %>% separate_rows(cast, sep = ", ")
 
 
+
 ```
 
 
@@ -28,7 +30,83 @@ netflix_titles %>% separate_rows(cast, sep = ", ")
 
 # Unsere Bearbeitung kommt hier hin
 
+```{r echo=FALSE}
+
+my_theme_v <- theme_minimal_vgrid() +
+   theme(plot.caption = element_text(hjust = 1, face= "italic"), #Default is hjust=1
+        plot.title.position = "plot", #NEW parameter. Apply for subtitle too.
+        plot.caption.position =  "plot")
+
+my_theme_h <- theme_minimal_hgrid() +
+   theme(plot.caption = element_text(hjust = 1, face= "italic"), #Default is hjust=1
+        plot.title.position = "plot", #NEW parameter. Apply for subtitle too.
+        plot.caption.position =  "plot")
+
+
+netflix_titles %>% filter(type == "Movie") %>% count(director) %>% arrange(-n) %>% 
+  na.omit() %>% 
+  head(15) %>% 
+  ggplot() +
+  aes(x = (fct_inorder(director)), y = n) + geom_col() +
+  coord_flip() +
+  scale_x_discrete(limits = rev) +
+  labs(x = "Director", y = "Count", title = "These directors have the most movies on Netflix", subtitle = "Top 15 directors", caption = "Data from the Tidytuesday Netflix dataset") +
+  my_theme_v
+```
+
 ```{r}
+netflix_titles %>% 
+  filter(type == "Movie") %>% 
+  ggplot() +
+  aes(x = release_year) + 
+  geom_bar() +
+  labs(x = "Year", y = "Count of movies", title = "Most movies on netflix are from the last 6 years") +
+  gghighlight::gghighlight(release_year > 2015) +
+  annotate("text", x = 1990, y = 500, label = "The bulk of available videos\nwas created later than 2015.") +
+  annotate("curve", x = 2007, xend = 2015, y = 470, yend = 380, curvature = -0.2,
+           arrow = arrow(angle = 30, length = unit(0.2, "cm"))) +
+  my_theme_h
+```
+
+
+```{r}
+netflix_titles %>% 
+  
+  filter(type == "Movie") %>% 
+  ggplot() +
+  aes(x = release_year, y = duration, group = release_year) +
+  geom_boxplot() +
+  labs(x = "year", y = "Movie duration", title = "Movies have become shorter recently.",
+       subtitle = "Since 2007 more very short and very long movies appeared.",
+       caption = "Boxplot showing the duration of movies.") +
+  gghighlight::gghighlight(release_year > 2007) +
+  my_theme_h
+
+netflix_titles %>% 
+  filter(type == "Movie") %>% 
+  ggplot() +
+  aes(x = release_year, y = duration, group = release_year) +
+  geom_jitter(alpha = 0.1) +
+  stat_summary(color = "skyblue", fun.data = mean_se) +
+  labs(x = "year", y = "Movie duration", title = "Movies have become shorter recently",
+       subtitle = "Since 2007 more very short and very long movies appeared",
+       caption = "Scatterplot showing the duration of movies. Highlighted dots denote mean duration.") +
+  gghighlight::gghighlight(release_year > 2007) +
+  my_theme_h
+
+netflix_titles %>% 
+  filter(type == "Movie") %>% 
+  ggplot() +
+  aes(x = release_year, y = duration, group = release_year) +
+  geom_jitter(alpha = 0.1) +
+  stat_summary(color = "skyblue", fun.data = mean_se) +
+  labs(x = "year", y = "Movie duration", title = "Longest movies on Netflix",
+       subtitle = "Movies that take more than 3:40h",
+       caption = "Scatterplot showing the duration of movies. Highlighted dots are long movies.") +
+  gghighlight::gghighlight(duration > 220, label_key = title) + 
+  my_theme_h
+
+
 ```
 
 
