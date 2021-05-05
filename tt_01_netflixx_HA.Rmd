@@ -41,6 +41,6 @@ ggplot(netflix_titles, aes(y = fct_relevel(type, "TV Show", "Movie"), fill = typ
 ```
 
 ```{r}
-ggplot(netflix_titles, aes(y = release_year, fill = type))+
+ggplot(netflix_titles, aes(x = release_year, fill = type))+
   geom_bar() + ylab(NULL) + labs(title = "Release year of movies and tv shows on Netflix", x = NULL)
 ```
