@@ -36,14 +36,13 @@ netflix_titles %>% separate_rows(cast, sep = ", ")
 # Ihre Bearbeitung kommt hier hin
 
 ```{r}
-#Amount Netflix Content by type
-amount_by_type <- netflix_titles %>% group_by(type) %>% summarise(
-  count = n())
 
-#Diagramm
-ggplot(data = amount_by_type, aes(x=type, y= count, fill=type))+ 
-  geom_col(color="red", size=0.4, fill="dark red")+
-  xlab("Netflix content by type")+ ylab("Amount of Netflix Content")
+
+#Netflix Content - Movies vs. TV Shows
+ggplot(data = netflix_titles, aes(x=type, fill=type))+ 
+  geom_bar(color="red", size=0.4, fill="dark red")+
+  labs(title ="Netflix content - Movies vs. TV Shows",x= "Content",     y="Amount")
+
 
 ```
 
@@ -62,6 +61,7 @@ top_ten<- netflix_titles%>%
   labs(x = "Total Film",y="Country", title = "Rank of Country on Netflix")
  
 ```
+
 
 
 
