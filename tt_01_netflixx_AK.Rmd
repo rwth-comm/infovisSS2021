@@ -1,0 +1,72 @@
+---
+title: "Netflix Data"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+netflix_titles <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-04-20/netflix_titles.csv')  %>% 
+  separate(duration, c("duration", "duration_units"), " ", convert = TRUE)
+
+
+
+# Jeden Eintrag mehrfach listen für jede Kategorie einmal
+netflix_titles %>% separate_rows(listed_in, sep = ", ")
+
+# Jeden Eintrag mehrfach listen für jeden Schauspieler einmal
+netflix_titles %>% separate_rows(cast, sep = ", ")
+
+
+```
+
+
+
+
+
+
+# Unsere Bearbeitung kommt hier hin
+
+```{r}
+```
+
+
+
+# Ihre Bearbeitung kommt hier hin
+
+```{r}
+# Anzahl von Filmen und Serien auf Netflix
+ggplot(netflix_titles, aes(x = type, fill= type)) +
+  theme_minimal() +
+  labs(title = "Es gibt mehr Filme als Serien auf Netflix", 
+       subtitle = "Anzahl von Filmen und Serien auf Netflix im Balkendiagramm",
+       x = "Medientyp",
+       y = "Häufigkeit") + 
+  geom_bar()
+```
+
+```{r}
+# Anzahl von Titeln aus verschiedenen Jahren
+ggplot(netflix_titles, aes(x = release_year, fill = type)) +
+  theme_minimal() +
+  labs(title = "Die meisten Titel auf Netflix wurden nach dem Jahr 2010 veröffentlicht", 
+       subtitle = "Anzahl von Titeln aus verschiedenen Jahren im Histogramm",
+       x = "Jahr der Veröffentlichung") + 
+  geom_histogram()
+```
+
+```{r}
+# Dataframe, der nur Medien aus 2021 beinhaltet
+netflix_2021 <- netflix_titles[netflix_titles$release_year == "2021",]
+
+# Anzahl von Titeln aus dem Jahr 2021
+ggplot(netflix_2021, aes(y = country, fill = type)) +
+  theme_minimal() +
+  labs(title = "Die meisten Titel, die im Jahr 2021 veröffentlicht wurden, stammen aus den USA", 
+       subtitle = "Anzahl von Titeln aus dem Jahr 2021 im Histogramm",
+       x = "Anzahl der Titel", 
+       y = "Länder") + 
+  geom_bar(position = "dodge")
+```
+
