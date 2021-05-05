@@ -36,8 +36,8 @@ netflix_titles %>% separate_rows(cast, sep = ", ")
 # Ihre Bearbeitung kommt hier hin
 
 ```{r}
-ggplot(netflix_titles, aes(x = "country", y)) +
-  geom_bar(netflix_titles, stat = "count", aes(fill = "country", position = "stack"))
+ggplot(netflix_titles, aes(release_year)) +
+  geom_histogram()
  
 ```
 
