@@ -1,16 +1,20 @@
-title: "tt_01_netflixx_LS."
+---
+title: "tt_01_netflixx_LSin"
 author: "Linda Sinani"
-date: "3 5 2021" 
+date: "5 5 2021"
+output: html_document
+---
+title: "InfoVis Abgabe Netflix"
+author: "Linda Sinani"
+date: "3 5 2021"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
-
 netflix_titles <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-04-20/netflix_titles.csv')  %>% 
   separate(duration, c("duration", "duration_units"), " ", convert = TRUE)
-
 ```
 
 
@@ -23,20 +27,15 @@ netflix_titles <- readr::read_csv('https://raw.githubusercontent.com/rfordatasci
 
 # exploring the data
 ```{r include=FALSE}
-
 ggplot(netflix_titles)+ geom_bar(aes(type)) 
 # allgemein gibt es mehr Filme als TV Shows auf Netflix 
-
-
-
+-----
 netflix_titles %>% 
   filter(country %in% c("Germany", "United States" )) %>% 
   count(type, release_year) %>% 
   ggplot(aes(release_year, n))+
   geom_line()
-
 #ODER in Prozent (reminder für mich: schauen wie man Prozentangaben schöner hinbekommt)
-
 netflix_titles %>% 
   filter(country %in% c("Germany", "United States" )) %>% 
   count(type, release_year) %>% 
@@ -44,8 +43,7 @@ netflix_titles %>%
   ggplot(aes(release_year, percent))+
   geom_line()
 # Ab den 2000er starker Anstieg von Filmen und TV Shows in DL & USA
-
-
+----
 netflix_titles %>% 
   filter(country %in% c("Germany", "United States" )) %>% 
   count(type, release_year) %>% 
@@ -54,8 +52,7 @@ netflix_titles %>%
   geom_line() + 
   facet_wrap(~type)
 # Dabei waren es mehr Filme als Tv Shows im Allgemeinen
-
-
+----
   
 netflix_titles %>% 
   filter(country %in% c("Germany", "United States" )) %>% 
@@ -66,9 +63,7 @@ netflix_titles %>%
   geom_line() + 
   facet_wrap(~type)  
 # genaueren Blick auf die Jahre ab 2000, unterteilt in type 
-
-
-
+----
   
 netflix_titles %>% 
   filter(country %in% c("Germany", "United States" )) %>% 
@@ -79,8 +74,7 @@ netflix_titles %>%
   geom_line() + 
   facet_wrap(~ country) 
 # DL & USA im Vergleich wie viele Filme und TV Shows zsm produziert wurden --> wie zu erwarten ist der Unterschied krass und USA hat bei weitem mehr produziert als DL
-
-
+----
   
 netflix_titles %>% 
   filter(country %in% c("Germany", "United States" )) %>% 
@@ -98,16 +92,12 @@ netflix_titles %>%
 ```{r}
 library(hrbrthemes)
 library(sysfonts)
-
 font_add_google("Source Sans Pro")
 windowsFonts(SourceSansPro =windowsFont("Source Sans Pro"))
-
-
 netflix_titles$country[netflix_titles$country == "Germany"] <- "Deutschland"
 netflix_titles$country[netflix_titles$country == "United States"] <- "USA"
 netflix_titles$type[netflix_titles$type == "Movie"] <- "Film"
 # Werte in den columns ändern (damit später schöner aussieht in Visualisierung)
-
 netflix_titles %>% 
   filter(country %in% c("Deutschland", "USA" )) %>% 
   filter(release_year > 2000) %>% 
@@ -134,7 +124,7 @@ netflix_titles %>%
         legend.title = element_blank(),
         legend.position = "bottom") 
         
-ggsave("tt_01_netflixx_LS.png")
+ggsave("Netflix_Vis.png")
 ```
 
 
@@ -143,7 +133,6 @@ ggsave("tt_01_netflixx_LS.png")
 library(hrbrthemes)
 library(sysfonts)
 library(gganimate)
-
 netflix_titles %>% 
   filter(country %in% c("Deutschland", "USA" )) %>% 
   filter(release_year > 2000) %>% 
@@ -170,7 +159,6 @@ netflix_titles %>%
         strip.background = element_rect(colour="black",fill="white"),
         legend.title = element_blank(),
         legend.position = "bottom") 
-
-anim_save("tt_01_netflixx_LS_anim.gif")
-
+anim_save("Netflix_Vis_anim.gif")
 ```
+
