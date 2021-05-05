@@ -6,7 +6,9 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
-
+library(ggplot2)
+library(dplyr)
+library(hrbrthemes)
 netflix_titles <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-04-20/netflix_titles.csv')  %>% 
   separate(duration, c("duration", "duration_units"), " ", convert = TRUE)
 
@@ -23,9 +25,6 @@ netflix_titles %>% separate_rows(cast, sep = ", ")
 
 
 
-
-
-
 # Unsere Bearbeitung kommt hier hin
 
 ```{r}
@@ -36,8 +35,25 @@ netflix_titles %>% separate_rows(cast, sep = ", ")
 # Ihre Bearbeitung kommt hier hin
 
 ```{r}
-ggplot(netflix_titles, aes(release_year)) +
-  geom_histogram()
- 
+data <- netflix_titles %>%
+  filter(type == "Movie")
+# Serien herausgefiltert, weil deren Dauer nur in Anzahl an Staffeln angegeben wird und sich somit schlecht mit Filmlängen in Minuten vergleichen lässt.
+
+
+# Plot
+  data %>%
+  
+  # ggplot( aes(x=release_year, y=duration)) +
+    
+    # geom_point() +
+    # xlab( "Erscheinungsjahr") +
+    # ylab( "Filmlänge")
+
+  ggplot( aes(x=release_year, y=duration)) +
+  geom_point() +
+    xlab( "Erscheinungsjahr") +
+    ylab( "Filmlänge") +
+  geom_smooth(method=lm , color="red", fill="#69b3a2", se=TRUE) +
+  theme_ipsum()
 ```
 
