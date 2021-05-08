@@ -41,7 +41,6 @@ ggplot(netflix_titles, aes(x=type))+
   geom_bar() +
      labs(x= "Netflix type", y = "Amount of released movies & tv shows")
 
-
 #Anzahl der veröffentlichten Filme ab 2005 (Balkendiagramm)
 condition1 <- filter(netflix_titles, release_year >= 2005 & type == "Movie")
 ggplot(condition1, aes(x=release_year, color=type))+
