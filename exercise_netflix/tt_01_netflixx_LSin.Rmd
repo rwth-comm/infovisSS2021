@@ -1,0 +1,164 @@
+---
+title: "tt_01_netflixx_LSin"
+author: "Linda Sinani"
+date: "5 5 2021"
+output: html_document
+---
+title: "InfoVis Abgabe Netflix"
+author: "Linda Sinani"
+date: "3 5 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+netflix_titles <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-04-20/netflix_titles.csv')  %>% 
+  separate(duration, c("duration", "duration_units"), " ", convert = TRUE)
+```
+
+
+# Unsere Bearbeitung kommt hier hin
+
+```{r}
+```
+
+
+
+# exploring the data
+```{r include=FALSE}
+ggplot(netflix_titles)+ geom_bar(aes(type)) 
+# allgemein gibt es mehr Filme als TV Shows auf Netflix 
+-----
+netflix_titles %>% 
+  filter(country %in% c("Germany", "United States" )) %>% 
+  count(type, release_year) %>% 
+  ggplot(aes(release_year, n))+
+  geom_line()
+#ODER in Prozent (reminder für mich: schauen wie man Prozentangaben schöner hinbekommt)
+netflix_titles %>% 
+  filter(country %in% c("Germany", "United States" )) %>% 
+  count(type, release_year) %>% 
+  mutate(percent= n / sum(n)) %>%
+  ggplot(aes(release_year, percent))+
+  geom_line()
+# Ab den 2000er starker Anstieg von Filmen und TV Shows in DL & USA
+----
+netflix_titles %>% 
+  filter(country %in% c("Germany", "United States" )) %>% 
+  count(type, release_year) %>% 
+  mutate(percent= n / sum(n)) %>%
+  ggplot(aes(release_year, percent))+
+  geom_line() + 
+  facet_wrap(~type)
+# Dabei waren es mehr Filme als Tv Shows im Allgemeinen
+----
+  
+netflix_titles %>% 
+  filter(country %in% c("Germany", "United States" )) %>% 
+  filter(release_year > 2000) %>% 
+  count(type, release_year) %>% 
+  mutate(percent= n / sum(n)) %>%
+  ggplot(aes(release_year, percent,group=type, color=type))+
+  geom_line() + 
+  facet_wrap(~type)  
+# genaueren Blick auf die Jahre ab 2000, unterteilt in type 
+----
+  
+netflix_titles %>% 
+  filter(country %in% c("Germany", "United States" )) %>% 
+  filter(release_year > 2000) %>% 
+  count(country, release_year) %>% 
+  mutate(percent= n / sum(n)) %>%
+  ggplot(aes(release_year, percent, group= country, color=country))+
+  geom_line() + 
+  facet_wrap(~ country) 
+# DL & USA im Vergleich wie viele Filme und TV Shows zsm produziert wurden --> wie zu erwarten ist der Unterschied krass und USA hat bei weitem mehr produziert als DL
+----
+  
+netflix_titles %>% 
+  filter(country %in% c("Germany", "United States" )) %>% 
+  filter(release_year > 2000) %>% 
+  count(country, release_year,type) %>% 
+  mutate(percent= (n / sum(n))*100) %>%                        #Skala Prozent direkt geändert 
+  ggplot(aes(release_year, percent, group= type, color=type))+
+  geom_line() + 
+  facet_wrap(~ country) 
+#Vergleich in DL & USA Movie & TV Show getrennt 
+```
+
+
+# endgültige Visualisierung :
+```{r}
+library(hrbrthemes)
+library(sysfonts)
+font_add_google("Source Sans Pro")
+windowsFonts(SourceSansPro =windowsFont("Source Sans Pro"))
+netflix_titles$country[netflix_titles$country == "Germany"] <- "Deutschland"
+netflix_titles$country[netflix_titles$country == "United States"] <- "USA"
+netflix_titles$type[netflix_titles$type == "Movie"] <- "Film"
+# Werte in den columns ändern (damit später schöner aussieht in Visualisierung)
+netflix_titles %>% 
+  filter(country %in% c("Deutschland", "USA" )) %>% 
+  filter(release_year > 2000) %>% 
+  count(country, release_year,type) %>% 
+ mutate(percent= n / sum(n)) %>%                        #Skala Prozent wenn man auf ganze Zahlen ändern will: (n / sum(n))*100)
+  ggplot(aes(release_year, percent, group= type, color=type))+
+  geom_line(lwd=1) + 
+  scale_color_manual(values=c("#661111", "#CD2323"))+
+  facet_wrap(~ country) +
+  ggtitle(label= "NETFLIX", 
+          subtitle= "Wie viele Filme & Tv Shows wurden seit den 2000er in Deutschland und den USA produziert?")+
+  ylab("Anteil") +
+  xlab("Erscheinungsjahr") +
+  scale_y_percent(limits = c(0,0.13), breaks = c(0, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12) )+ # braucht man nicht wenn man bei mutate direkt ändert (siehe oben)/ Vorteil hier: % Zeichen direkt dabei
+  theme_bw() +
+  theme(plot.title=element_text(size = 18, face="bold", family = "SourceSansPro", colour= "#CD2323",  hjust = 0.5), 
+        plot.subtitle = element_text(size = 10, face= "bold", family = "SourceSansPro", hjust = 0.5),
+        strip.text = element_text(face = "bold", size=10),
+        axis.text.x = element_text(size = 8, family ="SourceSansPro" ),
+        axis.text.y = element_text(size = 8, family= "SourceSansPro"),
+        axis.title.x = element_text(size=9, family ="SourceSansPro"),
+        axis.title.y = element_text(size=9, family ="SourceSansPro"),
+        strip.background = element_rect(colour="black",fill="white"),
+        legend.title = element_blank(),
+        legend.position = "bottom") 
+          
+ggsave("Netflix_Vis.png")
+```
+
+
+# animierte Visualisierung 
+```{r}
+library(hrbrthemes)
+library(sysfonts)
+library(gganimate)
+netflix_titles %>% 
+  filter(country %in% c("Deutschland", "USA" )) %>% 
+  filter(release_year > 2000) %>% 
+  count(country, release_year,type) %>% 
+ mutate(percent= n / sum(n)) %>%                        #Skala Prozent wenn man auf ganze Zahlen ändern will: (n / sum(n))*100)
+  ggplot(aes(release_year, percent, group= type, color=type))+
+  geom_line(lwd=1) + 
+  scale_color_manual(values=c("#661111", "#CD2323"))+
+  facet_wrap(~country) +
+  ggtitle(label= "NETFLIX", 
+          subtitle= "Wie viele Filme & Tv Shows wurden seit den 2000er in Deutschland und den USA produziert?")+
+  ylab("Anteil") +
+  xlab("Erscheinungsjahr") +
+  transition_reveal(release_year)+
+  scale_y_percent(limits = c(0,0.13), breaks = c(0, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12) )+ # braucht man nicht wenn man bei mutate direkt ändert (siehe oben)/ Vorteil hier: % Zeichen direkt dabei
+  theme_bw() +
+  theme(plot.title=element_text(size = 18, face="bold", family = "SourceSansPro", colour= "#CD2323",  hjust = 0.5), 
+        plot.subtitle = element_text(size = 10, face= "bold", family = "SourceSansPro", hjust = 0.5),
+        strip.text = element_text(face = "bold", size=10),
+        axis.text.x = element_text(size = 8, family ="SourceSansPro" ),
+        axis.text.y = element_text(size = 8, family= "SourceSansPro"),
+        axis.title.x = element_text(size=9, family ="SourceSansPro"),
+        axis.title.y = element_text(size=9, family ="SourceSansPro"),
+        strip.background = element_rect(colour="black",fill="white"),
+        legend.title = element_blank(),
+        legend.position = "bottom") 
+anim_save("Netflix_Vis_anim.gif")
+```
+
