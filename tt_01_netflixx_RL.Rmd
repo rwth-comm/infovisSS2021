@@ -57,3 +57,7 @@ data <- netflix_titles %>%
   theme_ipsum()
 ```
 
+```{r}
+lincoln_temps
+```
+
