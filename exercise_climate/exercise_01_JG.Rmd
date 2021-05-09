@@ -1,0 +1,29 @@
+---
+title: "Live Übung 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+dat <- read_rds("../datasets/lincoln_temps.rds")
+
+```
+
+# Lösung
+```{r}
+library(ggridges)
+summer_months <- filter(dat, month_long == "June" | month_long == "July" | month_long == "August")
+
+
+ggplot(summer_months, aes(x = mean_temp, y = month_long)) +
+  geom_density_ridges(
+    fill = "gold1"
+  ) +
+    labs (title = "Temeraturverteilungen in den Sommermonaten",
+          subtitle = "Ridgeline Plot",
+          caption = "Höchsttemperatur im Juli",
+          x = "Temperaturen (°F)",
+          y = "Sommermonate")
+```
