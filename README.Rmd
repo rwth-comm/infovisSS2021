@@ -1,0 +1,22 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# infovisSS2021
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+
+# InfoVis 2021
+
+Dieses Repository enthält Aufgaben und Übungen für die Lehrveranstaltung InfoVis im SS2021.

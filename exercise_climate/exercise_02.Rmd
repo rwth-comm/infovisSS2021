@@ -1,0 +1,20 @@
+---
+title: "Exercise_02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+climate_data <- read_csv("datasets/climate_monthly.csv")
+```
+
+
+```{r, include=FALSE}
+climate_data %>% 
+  filter(Source == "GISTEMP") %>% 
+  mutate(year = year(Date),
+         month = month(Date))
+```
+

@@ -1,4 +1,12 @@
 .Rproj.user
+<<<<<<< HEAD
+=======
+.Rhistory
+.RData
+.Ruserdata
+
+# History files
+>>>>>>> e0a62622425d9249a9b628cb6fc92a8536b66d40
 .Rhistory
 .RData
 .Ruserdata
