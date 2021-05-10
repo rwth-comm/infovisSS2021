@@ -1,0 +1,47 @@
+---
+title: "Live Übung 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+```{r}
+# additional libraries
+library(ggridges)
+library(ggplot2)
+library(viridis)
+library(hrbrthemes)
+
+dat <- read_rds("../datasets/lincoln_temps.rds")
+
+# In Monate aufteilen
+dat_by_month <- dat %>%
+  group_by(month) %>%
+  summarise(mean_temp_month = mean(mean_temp))
+
+# Daten plotten
+dat_by_month %>%
+  ggplot(aes(x = month, y = mean_temp_month)) +
+      geom_point(color = "darkorchid4") +
+      labs(title = "Die Durchschnittstemperaturen in Lincoln
+waren im Jahr 2016 im Juni, Juli und August am höchsten",
+           subtitle = "Daten nach Monaten geplottet",
+           y = "Durchschnittstemperatur in F",
+           x = "Monat") + theme_bw(base_size = 15)
+
+
+
+ggplot(dat, aes(x = mean_temp, y = month)) +
+  geom_density_ridges() +
+  labs(title = "Die Durchschnittstemperaturen in Lincoln
+waren im Jahr 2016 im Juni, Juli und August am höchsten",
+      subtitle = "Daten nach Monaten geplottet",
+      y = "Monat",
+      x = "Durchschnittstemperatur")
+
+
+```
+
