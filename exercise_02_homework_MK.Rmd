@@ -24,6 +24,7 @@ data2 <- climate_data %>%
 ```
 
 ```{r, Ergebnis Livegruppenübung 5.5.21}
+
 ggplot(dat, aes(x = mean_temp)) +
 geom_histogram(binwidth = 5, center = 2.5) +
   labs(x = "Durchschnittstemperatur")
