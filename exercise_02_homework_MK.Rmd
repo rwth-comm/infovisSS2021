@@ -51,7 +51,7 @@ ggplot(dat, aes(mean_temp, color = month))+
 
 
 ```{r, Hausaufgaben 5.5.21 - 2 neue Visualisierunge}
-#zusammen erarbeitet mit VM 
+#Zusammen erarbeitet mit VM 
 
 #Festsetzung eines themes übergeordnet für alle Viszalisierungen
 theme_set(theme_light())
