@@ -7,6 +7,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(palmerpenguins)
+library(ggplot2)
 ```
 
 
@@ -33,5 +34,17 @@ data <- rbind(c(50,20,220),c(0,0,0), data)
  
 # plot with default options:
 radarchart(data)
+```
+
+```{r}
+penguins%>%
+  na.omit()%>%
+  ggplot()+
+    (aes(x=species, 
+      y= bill_length_mm,
+      fill=sex))+
+  geom_violin()
+
+
 ```
 
