@@ -1,0 +1,35 @@
+---
+title: "Exercise_02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(ggridges)
+climate_data <- read_csv("datasets/climate_monthly.csv")
+```
+
+
+```{r, include=FALSE}
+data <- climate_data %>% 
+  filter(Source == "GISTEMP") %>% 
+  mutate(year = year(Date),
+         month = month(Date)) 
+ 
+
+```
+
+
+```{r}
+data %>%
+filter(year >= 2000, year <= 2010) %>%
+ggplot(aes(x = Mean, y = as.factor(year))) +
+  theme_minimal() +
+  labs(title = "Zwischen 2000 und 2010 ist die Durchschnittstemperatur gestiegen", 
+       subtitle = "Durchschnittstemperatur der Jahre 2000 bis 2010 in ridgelines",
+       x = "Durchschnittliche Temperatur",
+       y = "Jahr") +
+  geom_density_ridges(bandwidth = 0.05, fill = "skyblue")
+```
