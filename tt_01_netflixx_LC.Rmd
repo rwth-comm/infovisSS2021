@@ -1,0 +1,67 @@
+---
+title: "tt_01_netflixx_LC"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+netflix_titles <- 
+  readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-04-20/netflix_titles.csv')  %>% 
+  separate(duration, c("duration", "duration_units"), " ", convert = TRUE)
+netflix
+
+```
+
+```{r}
+
+
+library(ggplot2)
+
+ 
+  
+ggplot(netflix_titles, aes(x = release_year, fill = type)) +
+ theme_minimal() +
+  geom_bar()
+
+
+
+```
+```{r}
+netflix_titles %>%
+  mutate(country = fct_reorder(duration_units, release_year)) %>%
+  ggplot( aes(x=duration_units, y=release_year)) +
+    geom_bar(stat="identity", fill="#f68060", alpha=.6, width=.4) +
+    coord_flip() +
+    xlab("") +
+    theme_bw()
+```
+```{r}
+
+
+netflix_titles %>%
+  mutate(country = fct_reorder(country, type)) %>%
+  ggplot(aes(x=country, y=type)) +
+    geom_bar(stat="identity", fill="#f68060", alpha=.6, width=.4) +
+    coord_flip() +
+    xlab("") +
+    theme_bw()
+
+#ich weiß hier nicht, was ich falsch gemacht habe.
+```
+```{r}
+ggplot(netflix_titles, aes(x = country, fill = type)) +
+ theme_minimal() +
+  geom_bar(position = "dodge")
+
+#wie kriege ich es nochmal hin, dass die Balken dicker sind? Ich dachte das macht man mit dodge, aber das funktioniert immer noch nicht.
+
+```
+
+
+```{r}
+
+
+```
+
