@@ -18,13 +18,13 @@ climate_data %>%
          month = month(Date))
 ```
 
-```{r}
+```{r Visualisierung 1}
 ggplot(climate_data) +
          geom_area(aes(x = Date, y = Mean, fill = Source)) +
    labs(title = "", x = "Jahr", y = "Durchschnitt")
 ```
 
-```{r}
+```{r Visualisierung 2}
 ggplot(climate_data, aes(Date, Mean, group = Source)) +
   geom_line(aes(colour = Source), position = "stack") + 
   geom_point(aes(colour = Source), position = "stack") +
