@@ -1,0 +1,102 @@
+---
+title: "Live Übung 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggforce)
+library(ggridges)
+library(treemap)
+library(ggthemes)
+
+dat <- read_rds("datasets/lincoln_temps.rds")
+
+```
+
+```{r}
+view(dat)
+
+# final 1
+dat %>% 
+  ggplot() +
+  aes(y = month_long,
+      x = mean_temp) +
+  geom_density_ridges(fill = "#FFD905") +
+  theme_dark() +
+  ylab(NULL) +
+  labs(x = "Temperatur",
+       title = "Die Sommermonate sind die wärmsten",
+       subtitle = "Durchschnittstemperatur über die Monate in Lincoln (Nebraska)",
+       caption = "Temperatur in Fahrenheit"
+       )
+
+
+# final 2
+dat %>% 
+  treemap(index = "month_long",
+          vSize = "mean_temp",
+          type = "index",
+          fontsize.labels=c(16),
+    fontcolor.labels=c("black"),
+    fontface.labels=c(1),
+    title = "Anteile der Durchschnittstemperatur",
+    fontsize.title = 15
+  )
+
+
+# final 3
+
+dat %>% 
+  ggplot() +
+  aes(x = month,
+      y = mean_temp) +
+  geom_violin(fill = "#E7F1EC") +
+  geom_sina() +
+  theme_fivethirtyeight() +
+  labs(title = "Die Sommermonate sind die wärmsten",
+       subtitle = "Durchschnittstemperatur über die Monate in Lincoln (Nebraska)",
+       y = "Temperatur",
+       caption = "Temperatur in Fahrenheit \n Punkte repräsentieren Tage \n Violine repräsentiert Fläche der gemessenen Temperatur")
+
+
+
+
+
+
+
+dat %>% 
+  ggplot() +
+  aes(x = mean_temp) +
+  geom_density(fill = "skyblue") +
+  facet_wrap(~month)
+
+
+
+dat %>% 
+  ggplot() +
+  aes(x = month,
+      y = mean_temp) +
+  geom_jitter(height = 0,
+              width = 0.1,
+              color = "#FFD905") +
+  theme_dark()
+
+
+
+dat %>% 
+  ggplot() +
+  aes(x = month,
+      y = mean_temp) +
+  geom_col() +
+  coord_polar()
+
+
+
+
+
+
+
+```
+
