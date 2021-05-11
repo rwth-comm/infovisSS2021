@@ -9,6 +9,7 @@ library(tidyverse)
 
 dat <- read_rds("../datasets/lincoln_temps.rds")
 
+
 ```
 
 # Lösung
