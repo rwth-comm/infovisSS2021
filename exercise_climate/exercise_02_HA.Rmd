@@ -1,0 +1,31 @@
+---
+title: "Exercise_02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+climate_data <- read_csv("../datasets/climate_monthly.csv")
+```
+
+
+```{r, include=FALSE}
+data <- climate_data %>% 
+  filter(Source == "GISTEMP") %>% 
+  mutate(year = year(Date),
+         month = month(Date))
+```
+
+```{r}
+data %>%
+filter(year >= 1995, year <= 2010) %>%
+ggplot(aes(as.factor(year), Mean))+
+  geom_boxplot(fill = "slategray1") + 
+  labs(title = "Between 1995 and 2010 the global surface temperature increased
+every year", subtitle = "Estimate of global surface temperature change between 1995 and 2010", x = NULL, y = "Mean of global surface temperature change in °C")
+```
+
+
+

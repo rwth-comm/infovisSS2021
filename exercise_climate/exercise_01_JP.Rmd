@@ -1,0 +1,25 @@
+---
+title: "Live Übung 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggridges)
+
+dat <- read_rds("../datasets/lincoln_temps.rds")
+
+```
+
+```{r}
+dat %>%
+ggplot(
+  aes(x = mean_temp, y = month_long)) +
+  geom_density_ridges() +
+  labs(x = "mean temperature (in °F)", 
+       y = "month",
+       title = "Temperatures are highest at the middle of the year",
+       subtitle = "Mean temperature per month in a ridgeline plot")
+```
+

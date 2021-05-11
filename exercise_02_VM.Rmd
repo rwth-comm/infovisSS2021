@@ -1,0 +1,87 @@
+---
+title: "exercise_02_VM"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(ggridges)
+library(psych)
+library(ggforce)
+climate_data <- read_csv("datasets/climate_monthly.csv")
+
+dat <- read_rds("datasets/lincoln_temps.rds")
+```
+
+
+```{r, include=FALSE}
+data2 <- climate_data %>% 
+  filter(Source == "GISTEMP") %>% 
+  mutate(year = year(Date),
+         month = month(Date))
+```
+
+```{r, Ergebnis Livegruppenübung 5.5.21}
+
+ggplot(dat, aes(x = mean_temp)) +
+geom_histogram(binwidth = 5, center = 2.5) +
+  labs(x = "Durchschnittstemperatur")
+
+
+ggplot(dat, aes(mean_temp)) +
+  geom_tile(
+    aes(
+      y = 1, 
+      fill = after_stat(density)  
+    ),
+    stat = "density",
+    n = 20    # number of points calculated by stat_density() 
+  ) +
+  labs(x = "Durchschnittstemperatur")
+
+ggplot(dat, aes(mean_temp, color = month))+
+  geom_histogram(
+    binwidth = 5,
+    stat = "density"
+  ) +
+   labs(x = "Durchschnittstemperatur")
+```
+
+```{r, Hausaufgaben 5.5.21 - 2 neue Visualisierunge}
+
+#Festsetzung eines themes übergeordnet für alle Viszalisierungen
+theme_set(theme_light())
+
+#1. Visualisierung Lincoln Temperatures als Ridgeline Plot
+
+describe(dat)
+
+ggplot(dat, aes(x = mean_temp, y = month_long)) +
+  geom_density_ridges(fill = "skyblue", color = "white") +
+  labs(title = "The mean temperature in varied from -6 to 85 °F in 2016",
+       x = "mean temperature (°F)",
+       y = "",
+       caption = "each month is visualized as a KDE",
+       subtitle = "development of mean teamperatures Lincoln (Nebraska) in 2016")
+
+#1. Visualisierung der Climate Data als Sina Plot
+
+data2  %>%
+  filter(year >= 2010) %>%
+ggplot(aes(x = as.factor(year), y = Mean)) +
+  geom_violin(fill = "skyblue", color = NA) + # violins in background
+  geom_sina(size = 0.75) + # sina jittered points in foreground
+  ylim(0, 1.4) +
+  labs(title = "Temperature anomalies are increasing between 2010 and 2016 ",
+       x = "",
+       y = "Mean of global surface temperature change in °C",
+       caption = "points indicate single measurements, violins show KDE",
+       subtitle = "development of mean global surface temperature change")
+
+```
+
+
+
+
