@@ -1,0 +1,44 @@
+---
+title: "Exercise_02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+climate_data <- read_csv("../datasets/climate_monthly.csv")
+```
+
+#Umbenennung
+```{r}
+colnames(climate_data)[1] <- "Quelle"
+colnames(climate_data)[2] <- "Datum"
+colnames(climate_data)[3] <- "Durchschnitt"
+```
+
+```{r, include=FALSE}
+climate_data %>% 
+  filter(Quelle == "GISTEMP") %>% 
+  mutate(year = year(Datum),
+         month = month(Datum))
+```
+
+#Visualisierung
+```{r}
+ggplot(climate_data, aes(Durchschnitt, color = Quelle)) +
+  geom_line(stat = "density", bw = 0.1) +
+  xlim (-1,2) +
+  labs(title = "Temperaturabweichungen in Abhängigkeit der Quelle", subtitle = "Abweichungen gemessener Durchschnittstemperaturen", y= "Dichte", x= "Temperatur in °F")+
+  theme_linedraw()+
+  theme(plot.title = element_text(face = "bold"))
+```
+
+```{r}
+ggplot(climate_data, aes(Durchschnitt, color= Quelle)) +
+  geom_line(stat = "density", bw = 0.1) +
+  facet_wrap(~ Quelle, nrow = 3)+
+  labs(title = "Temperaturvergleich nach Quelle", subtitle = "Abweichungen gemessener Temperaturen", y= "Dichte", x= "Temperatur in °F")+
+  theme_linedraw()+
+  theme(plot.title = element_text(face = "bold"))
+```

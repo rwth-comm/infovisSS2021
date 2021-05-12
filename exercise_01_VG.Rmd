@@ -1,0 +1,51 @@
+---
+title: "Live Übung 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+dat <- read_rds("datasets/lincoln_temps.rds")
+```
+
+```{r}
+ggplot(dat, aes(x = mean_temp)) +
+geom_histogram(binwidth = 5, center = 2.5) +
+  labs(x = "Durchschnittstemperatur") +
+   facet_wrap(~month)
+```
+
+```{r}
+ggplot(dat, aes(mean_temp)) +
+  geom_tile(
+    aes(
+      y = 1, 
+      fill = after_stat(density)  
+    ),
+    stat = "density",
+    n = 20    # number of points calculated by stat_density() 
+  ) +
+  labs(x = "Durchschnittstemperatur") +
+   facet_wrap(~month)
+```
+
+```{r}
+ggplot(dat, aes(mean_temp, color = month))+
+  geom_histogram(
+    binwidth = 5,
+    stat = "density"
+  ) +
+   labs(x = "Durchschnittstemperatur")
+```
+```{r}
+ggplot(dat, aes(mean_temp, color = month))+
+  geom_histogram(
+    binwidth = 5,
+    stat = "density"
+  ) +
+   labs(x = "Durchschnittstemperatur") +
+  facet_wrap(~month)
+```
+

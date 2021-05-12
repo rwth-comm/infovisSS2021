@@ -1,0 +1,29 @@
+---
+title: "Exercise_02_LSS"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+climate_data <- read_csv("../datasets/climate_monthly.csv")
+```
+
+
+```{r, include=FALSE}
+climate_data %>% 
+  filter(Source == "GISTEMP") %>% 
+  mutate(year = year(Date),
+         month = month(Date)) -> climate_data_new
+```
+
+```{r}
+climate_data_new %>%
+  filter(year >= 2000) %>%
+ggplot +
+  geom_area(aes(x = Date, y = Mean, fill = Source)) +
+  labs(title = "Durschnittlicher Temperaturanstieg von 2000 - 2016", x = "Jahr", y = "Anstieg in Grad Celsius")
+  
+```
+
