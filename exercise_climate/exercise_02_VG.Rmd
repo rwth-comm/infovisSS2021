@@ -7,6 +7,8 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
+library(gganimate)
+library(gifski)
 climate_data <- read_csv("../datasets/climate_monthly.csv")
 ```
 
@@ -31,4 +33,7 @@ ggplot(climate_data, aes(Date, Mean, group = Source)) +
   facet_wrap(~ Source, nrow = 2) +
   labs(title = "", x = "Jahr", y = "Durchschnitt")
 ```
+
+
+
 
