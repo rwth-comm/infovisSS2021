@@ -34,6 +34,20 @@ ggplot(climate_data, aes(Date, Mean, group = Source)) +
   labs(title = "", x = "Jahr", y = "Durchschnitt")
 ```
 
+```{r Live-Übung Animation}
+# ggplot(climate_data, aes(Date, Mean, group = Source)) +
+#  geom_line(aes(colour = Source), position = "stack") + 
+#  geom_point(aes(colour = Source), position = "stack") +
+#  facet_wrap(~ Source, nrow = 2) +
+#  labs(title = "", x = "Jahr {frame_along}", y = "Durchschnitt") +
+#  coord_polar() +
+#  gganimate::transition_reveal(Date) +
+#  geom_hline(yintercept = 0) 
 
+# animate(
+#  anim,
+#  fps = 4
+# )
+```
 
 
