@@ -84,3 +84,29 @@ ggplot(aes(x = as.factor(year), y = Mean)) +
 
 ```
 
+```{r, Live-Übung 12.05.21 GIF}
+
+library(gifski)
+library(gganimate)
+
+climate_data %>%
+  filter(Source == "GISTEMP") %>%
+  mutate(year = year(Date),
+         month = month(Date)) %>%
+         ggplot()+
+         aes(x = month, y = Mean, color = Mean, group = year)+
+         geom_line() +
+         coord_polar() +
+  scale_x_continuous(limits = c(0,12), breaks = 1:12)+
+         geom_hline(yintercept = 0, color = "red", size = 1.5)+
+         scale_color_viridis_c(option = "B")+
+         gganimate::transition_reveal(year)+
+  # Position zeigt die verschiedenen Jahre
+         labs(title = "Temperatur im Jahr:{frame_along}") -> anim
+
+animate(anim, fps = 4, nframes = 137)
+# fps = Bilder pro Sekunde, hier werden 4 Linien = 4 Jahre pro Sekunde gezeichnet
+# nframes = 137 entspricht der Anzahl der Jahre in dem Datensatz, wie viele einzelne Bilder werden insgesamt gezeichnet
+
+```
+
