@@ -1,0 +1,40 @@
+---
+title: "Live Übung 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+dat <- read_rds("../datasets/lincoln_temps.rds")
+
+```
+
+```{r}
+colnames(dat)[1] <- "Datum"
+colnames(dat)[2] <- "Monat"
+colnames(dat)[3] <- "Monat_lang"
+colnames(dat)[4] <- "Durchschnittstemperatur"
+```
+
+
+#Visualisierung
+```{r}
+ggplot(dat, aes(Durchschnittstemperatur, colour = Monat, fill = Monat)) +
+  geom_density(bw = 0.5, kernel = "gaussian") +
+  facet_wrap(~Monat) +
+  xlim(-10, 100) +
+  theme_linedraw() +
+  labs(title = "Durchschnittstemperatur nach Monat", subtitle = "Temperaturen in Lincoln", x= "Temperatur in F°", y= "Dichte", caption = )+
+   theme(plot.title = element_text(face = "bold"))
+```
+
+```{r}
+ggplot(dat, aes(Durchschnittstemperatur, colour = Monat, fill = Monat)) +
+  geom_density(bw = 0.5) +
+  xlim(-10, 100) +
+  theme_linedraw() +
+  labs(title = "Durchschnittstemperatur nach Monat", subtitle = "gemessene Temperaturen in Lincoln ", x= "Temperatur in °F", y= "Dichte", caption = )+
+   theme(plot.title = element_text(face = "bold"))
+```

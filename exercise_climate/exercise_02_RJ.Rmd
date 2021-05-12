@@ -1,0 +1,40 @@
+---
+title: "Exercise_02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+climate_data <- read_csv("../datasets/climate_monthly.csv")
+```
+
+
+```{r, include=FALSE}
+climate_data %>% 
+  filter(Source == "GISTEMP") %>% 
+  mutate(year = year(Date),
+         month = month(Date)) -> dat_refined
+```
+
+```{r}
+dat_refined%>%
+  filter(year>=2000)%>%
+  ggplot(aes(x=as.factor(year),y=Mean))+
+  geom_violin(fill="light blue",color=NA)+
+  geom_sina(size=0.75) +
+  labs(title="Mean temperature changes are increasing with their maximum difference in 2016",subtitle="Mean temperature change in violin and sina plot",caption="Temperature is measured in F°",x="Year",y="Mean temperature change")
+```
+
+```{r}
+dat_refined%>%
+  filter(year>=2000)%>%
+  ggplot(aes(x=as.factor(year),y=Mean))+
+  geom_boxplot(fill="light blue",color="dark blue")+
+  labs(title="Mean temperature changes are increasing with their maximum difference in 2016",subtitle="Mean temperature change in violin and sina plot",caption="Temperature is measured in F°",x="Year",y="Mean temperature change")
+```
+```
+
+
+

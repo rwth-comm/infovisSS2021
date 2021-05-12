@@ -1,0 +1,22 @@
+---
+title: "Live Übung 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+dat <- read_rds("../datasets/lincoln_temps.rds")
+
+```
+
+
+
+```{r}
+  ggplot(lincoln_temps, aes(mean_temp, month)) +   
+   geom_density_ridges(fill = "slategray1") + 
+    labs(title = "The highest mean temperature was measured in July (85 °F),
+the lowest in December (-6 °F)", subtitle = "Mean temperature in Lincoln (Nebraska) in 2016", x = "mean temperature in °F", y = NULL)
+
+```

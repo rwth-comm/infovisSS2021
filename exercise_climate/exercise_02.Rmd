@@ -7,14 +7,75 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
-climate_data <- read_csv("datasets/climate_monthly.csv")
+climate_data <- read_csv("../datasets/climate_monthly.csv")
 ```
 
 
 ```{r, include=FALSE}
+
+
 climate_data %>% 
   filter(Source == "GISTEMP") %>% 
   mutate(year = year(Date),
-         month = month(Date))
+         month = month(Date)) 
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r, include=FALSE}
+
+
+climate_data %>% 
+  filter(Source == "GISTEMP") %>% 
+  mutate(year = year(Date),
+         month = month(Date)) %>%
+  ggplot() +
+  aes(x = month, y = Mean, group = year, color = year) +
+  geom_line() +
+  scale_x_continuous(limits = c(0,12), breaks = 1:12) +
+  scale_color_gradient(low = "#00FF00", high = "#FF0000") +
+  coord_polar(start = 0, theta = "x") +
+  gganimate::transition_time(year) +
+  labs(title = "Temperatur {frame_time}") +
+  exit_fade() +
+  shadow_mark(color = "gray", size = 0.4) +
+  geom_hline(yintercept = 0) +
+  NULL -> anim
+
+
+animate(
+  anim, 
+  nframes = 147, fps = 3, end_pause = 10
+)
+
+library(gganimate)
+
+
+
 ```
 

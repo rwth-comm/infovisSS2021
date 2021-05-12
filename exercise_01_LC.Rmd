@@ -1,0 +1,27 @@
+---
+title: "Übung 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+dat <- 
+  read_rds("../datasets/lincoln_temps.rds")
+
+```
+
+```{r}
+
+library(ggridges) 
+ggplot(dat, aes(x = mean_temp, y = month_long)) +
+  geom_density_ridges(fill = "red") +
+  labs(title = "Die Durchschnittstemperatur ist im Juli am höchsten", subtitle = "Durchschnittstemperatur im Ridgelineplot", x = "Durchschnittstemperatur", y = "Monat")
+
+```
+```{r}
+ggplot(dat, aes(x = month, y = mean_temp)) +
+  geom_violin(fill = "orange") + 
+   labs(title = "Die Durchschnittstemperatur ist über das Jahr normalverteilt", subtitle = "Durchschnittstemperatur im Violinplot", x = "Durchschnittstemperatur", y = "Monat")
+```

@@ -1,0 +1,32 @@
+---
+title: "Live Übung 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+
+dat <- read_rds("../datasets/lincoln_temps.rds")
+
+```
+
+```{r}
+#Ridgeline-Plot
+
+dat%>%
+  ggplot(aes(x=mean_temp,y=month_long)) +
+  geom_density_ridges(bandwidth=1, color="dark blue", fill="light blue") +
+  labs(title="The month july has the highest mean temperature",subtitle="Temperatures in Lincoln (Nebraska)",caption="Temperature is measured in F°",x="Mean temperature per month",y=NULL)
+```
+
+```{r}
+#Oder Violin-Plot
+
+dat%>%
+  ggplot(aes(x=month,y=mean_temp)) +
+  geom_violin(color="dark blue", fill="light blue") +
+  labs(title="The month july has the highest mean temperature",subtitle="Temperatures in Lincoln (Nebraska)",caption="Temperature is measured in F°",x=NULL,y="Mean temperature per month")
+```
+

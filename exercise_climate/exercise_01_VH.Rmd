@@ -1,0 +1,32 @@
+---
+title: "Live Übung 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggforce)
+
+dat <- read_rds("../datasets/lincoln_temps.rds")
+
+```
+
+```{r}
+ggplot(dat, aes(month,mean_temp)) +
+geom_violin(fill = "skyblue", color = NA)+ 
+geom_sina(size = 0.75)+
+  labs(y = "Temperatur Mittelwerte (°F)", x= "Monat", title = "Durchschnittliche Tagestemperaturen je Monat im Jahr 2016 in Lincoln, Nebraska", subtitle = "n=366", caption="")+
+  theme_minimal()
+
+
+#Warum klappt das nicht?
+ggplot(dat, aes(month, mean_temp)) +
+geom_density_ridges(fill = "skyblue")+
+  labs(y = "Temperatur Mittelwerte (°F)", x= "Monat", title = "Durchschnittliche Tagestemperaturen je Monat im Jahr 2016 in Lincoln, Nebraska", subtitle = "n=366", caption="")+
+  theme_minimal()
+
+
+
+```
+
