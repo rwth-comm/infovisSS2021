@@ -12,9 +12,9 @@ library(lubridate)
 library(ggridges)
 library(psych)
 library(ggforce)
-climate_data <- read_csv("datasets/climate_monthly.csv")
+climate_data <- read_csv("../datasets/climate_monthly.csv")
 
-dat <- read_rds("datasets/lincoln_temps.rds")
+dat <- read_rds("../datasets/lincoln_temps.rds")
 ```
 
 
