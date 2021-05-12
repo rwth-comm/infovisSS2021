@@ -1,0 +1,69 @@
+---
+title: "Exercise_02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+climate_data <- read_csv("../datasets/climate_monthly.csv")
+```
+
+
+```{r, include=FALSE}
+climate_data %>% 
+  filter(Source == "GISTEMP") %>% 
+  mutate(year = year(Date),
+         month = month(Date))
+```
+
+```{r}
+# additional libraries
+library(ggridges)
+library(ggplot2)
+library(viridis)
+library(hrbrthemes)
+library(dplyr)
+library(tibbletime)
+
+
+climate_data_GISTEMP <- climate_data %>% 
+  filter(Source == "GISTEMP") %>% 
+  mutate(year = year(Date),
+         month = month(Date))
+
+climate_data_GCAG <- climate_data %>%
+  filter(Source == "GCAG") %>%
+  mutate(year = year(Date),
+         month = month(Date))
+
+# In Jahre aufteilen
+#climate_data_yearly <- climate_data %>%
+ # group_by(Date) %>%
+  #summarise(mean_year = mean(Mean))
+
+# Beide Datensätze in einem Diagramm
+ggplot() +
+  geom_line(data = climate_data_GCAG, aes(x = Date, y = Mean), color = "blue") +
+  geom_line(data = climate_data_GISTEMP, aes(x = Date, y = Mean), color = "red") +
+   labs(title = "Die durchschnittlichen Temperaturabweichungen steigen seit Beginn 
+der Datenerfassung 1880",
+      subtitle = "Blau: GCAG-Daten,  Rot: GISTEMP-Daten ",
+      y = "Jahr",
+      x = "Durchschnittliche Temperaturabweichung")
+
+# Graphen mit Trendlinie
+
+ggplot(climate_data_GCAG, aes(x= Date, y= Mean)) +
+ geom_point() +
+  geom_smooth(method=lm , color="red", se=FALSE) +
+  theme_ipsum()
+  
+ggplot(climate_data_GISTEMP, aes(x= Date, y= Mean)) +
+ geom_point() +
+  geom_smooth(method=lm , color="skyblue", se=FALSE) +
+  theme_ipsum() 
+
+```
+
