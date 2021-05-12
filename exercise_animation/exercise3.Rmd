@@ -1,0 +1,21 @@
+---
+title: "Exercise_02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(gganimate)
+library(gifski)
+library(gapminder)
+```
+
+
+```{r}
+gapminder %>% 
+  filter(continent == "Asia") %>% 
+ 
+```
+

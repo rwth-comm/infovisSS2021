@@ -1,0 +1,39 @@
+---
+title: "Exercise_02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+climate_data <- read_csv("datasets/climate_monthly.csv")
+```
+
+
+```{r, include=FALSE}
+
+df <- climate_data %>% 
+        filter(Source == "GISTEMP") %>% 
+        mutate(year = year(Date),
+           month = month(Date))
+
+
+df %>% 
+  filter(month == "1") %>% 
+  ggplot() +
+  aes(x = year,
+      y = Mean) +
+  geom_line() +
+  theme_fivethirtyeight() +
+  labs(title = "Temperaturentwicklung des Januars",
+       subtitle = "von 1880 bis 2016",
+       caption = "Punkte repräsentieren Mittelwerte \n Horizontale Linie als Nullpunkt") +
+  scale_x_continuous(limits = c(1880, 2016), breaks = c(1880, 1900, 1920, 1940, 1960, 1980, 2000, 2016)) +
+  geom_point(size = 1, color = "#F0A1AD") +
+  geom_hline(yintercept = 0, alpha = 0.4) +
+  NULL
+  
+```
+
+
