@@ -7,6 +7,8 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
+library(gganimate)
+library(gifski)
 
 climate_data <- read_csv("../datasets/climate_monthly.csv")
 ```
@@ -30,3 +32,21 @@ Anstieg", subtitle = "Vergleich zwischen GCAG und GISTEMP von 1880 bis 2016", ca
   scale_color_manual(values=c("dark orange", "dark red")) +
   theme_bw()
 ```
+
+```{r}
+climate_data %>%
+  filter(Source == "GISTEMP") %>%
+  mutate(year = year(Date),
+         month = month(Date)) %>%
+         ggplot()+
+         aes(x = month, y = Mean, color = Mean, group = year)+
+         geom_line()+
+         coord_polar()+
+         scale_x_continuous(limits = c(0,12), breaks = 1:12)+
+         geom_hline(yintercept = 0, color = "dark grey", size = 3)+
+         scale_color_viridis_c(option = "C")+
+         gganimate::transition_reveal(year)+
+         labs(title = "Temperatur im Jahr:{frame_along}") -> anim
+         animate(anim, fps = 4, nframes = 137)
+```
+

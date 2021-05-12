@@ -40,8 +40,6 @@ ggplot(dat, aes(x = mean_temp, y = month)) +
 waren im Jahr 2016 im Juni, Juli und August am höchsten",
       subtitle = "Daten nach Monaten geplottet",
       y = "Monat",
-      x = "Durchschnittstemperatur in Grad Fahrenheit")
-
-
+      x = "Durchschnittstemperatur in Grad Fahrenheit") 
 ```
 
