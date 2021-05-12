@@ -8,6 +8,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
 library(ggforce)
+library(gganimate)
+library(gifski)
 
 climate_data <- read_csv("../datasets/climate_monthly.csv")
 ```
@@ -20,7 +22,7 @@ climate_data <- climate_data %>%
          month = month(Date))
 ```
 
-```{r}
+```{r, Hausaufgabe}
 climate_data %>%
   filter(year >= 2000, year <= 2016) %>%
   ggplot(
@@ -32,5 +34,27 @@ climate_data %>%
        y = "mean global surface temperature change",
     title = "Global surface temperature increases over time",
     subtitle = "Global surface temperature change from 2000 to 2016 in violin plot")
+```
+
+
+```{r, Liveübung vom 12.05.2021 (Gruppe 5)}
+climate_data %>%
+  ggplot() +
+    aes(x = month, y = Mean, color = Mean, group = year) +
+    geom_line() +
+    coord_polar() +
+    scale_x_continuous(limits = c(0,12), breaks = 1:12)  +
+    geom_hline(yintercept = 0, size = 1, color = "black") +
+    scale_color_viridis_c(option = "C") +
+  gganimate::transition_reveal(year) +
+  labs(x = "Monat", y = "Durchschnittliche Temperaturveränderung (in °C)",
+    title = "Temperatur in Jahr: {frame_along}", caption = "schwarze Linie stellt Nullpunkt dar") -> anim
+
+animate(
+  anim,
+  fps = 4,
+  nframes = 137
+)
+
 ```
 
