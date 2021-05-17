@@ -7,7 +7,8 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 
-dat <- read_rds("datasets/lincoln_temps.rds")
+dat <- read_rds("../datasets/lincoln_temps.rds")
+
 
 ```
 
