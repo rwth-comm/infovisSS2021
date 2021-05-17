@@ -20,8 +20,9 @@ climate_data %>%
 
 ```{r Visualisierung 1}
 ggplot(climate_data) +
-         geom_area(aes(x = Date, y = Mean, fill = Source)) +
-   labs(title = "Durschnittlicher Temperaturanstieg", x = "Jahr", y = "Durchschnitt")
+         geom_area(aes(x = Date, y = Mean, fill = Source), position = "identity",
+                   alpha = 0.5) +
+   labs(title = "Kaum Unterschiede in der Abweichung zwischen den Quellen", x = "Jahr", y = "Durchschnittliche Temperaturabweichung (°C)")
 ```
 
 ```{r Visualisierung 2}
