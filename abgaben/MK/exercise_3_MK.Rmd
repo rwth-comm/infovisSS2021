@@ -1,5 +1,5 @@
 ---
-title: "Exercise_02"
+title: "Exercise_03_MK"
 output: html_document
 ---
 
@@ -11,6 +11,23 @@ library(gganimate)
 options(gganimate.nframes = 30)
 library(gifski)
 library(gapminder)
+```
+
+```{r}
+ranked_by_year %>%
+ggplot(aes(x = gdpPercap, y = fct_reorder(country, gdpPercap), fill = country)) +
+  geom_col() +
+  scale_x_continuous(limits = c(0,40000)) + 
+  labs( x = "Gross Domestic Product per Capita",
+       y = "",
+       subtitle = "Development of GDP per Capita from 1952 to 2007") +
+  theme_light() +
+  scale_fill_brewer(palette = "Set3") +
+  gganimate::transition_reveal(year) +
+  labs(title = "Gross Domestic Product per Capita in:{frame_along}")-> animMK
+
+animate(animMK, fps = 1, nframes = 12)
+
 ```
 
 
@@ -26,7 +43,7 @@ gapminder %>%
   ranked_by_year
 ```
 
-```{r}
+```{r, Musterlösung ACV}
 ranked_by_year %>%  
   ggplot() +  
   aes(xmin = 0 ,  
