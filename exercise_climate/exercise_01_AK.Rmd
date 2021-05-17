@@ -1,0 +1,26 @@
+---
+title: "Live Übung 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggforce)
+
+dat <- read_rds("datasets/lincoln_temps.rds")
+
+```
+
+
+```{r}
+ggplot(dat, aes(x = month, y = mean_temp)) +
+    theme_minimal() +
+  labs(title = "In den Monaten Juni, Juli und August ist die durchschnittliche Temperatur
+am höchsten", 
+       subtitle = "Monatliche Durchschnittstemperatur im Sina Plot",
+       x = "Monat",
+       y = "Temperatur") +
+  geom_violin(fill = "skyblue", color = NA) + 
+  geom_sina(size = 0.75) 
+```

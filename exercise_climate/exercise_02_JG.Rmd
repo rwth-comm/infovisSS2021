@@ -1,0 +1,36 @@
+---
+title: "Exercise_02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+climate_data <- read_csv("../datasets/climate_monthly.csv")
+```
+
+```{r, include=FALSE}
+climate_data %>% 
+  filter(Source == "GISTEMP") %>% 
+  mutate(year = year(Date),
+         month = month(Date))
+```
+
+
+# Lösung
+```{r}
+
+library(ggforce)
+climate_2000 <- filter(climate_data, year(Date) >= 2000 & year(Date) <= 2016)
+
+ggplot(climate_2000, aes(x = year(Date), y = Mean, group = year(Date))) +
+  geom_violin(fill = "skyblue", color = NA) +
+  geom_sina(size = 0.75) +
+    labs (title = "Temeraturvergleich der Jahre 2000-2016",
+          subtitle = "Sina Plot",
+          caption = "Höchsttemperaturen in 2016",
+          x = "Jahr",
+          y = "Sommermonate")
+```
+

@@ -1,0 +1,34 @@
+---
+title: "Exercise_02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+climate_data <- read_csv("../datasets/climate_monthly.csv")
+```
+
+
+```{r, include=FALSE}
+climate_data %>% 
+  filter(Source == "GISTEMP") %>% 
+  mutate(year = year(Date),
+         month = month(Date))
+```
+
+```{r Visualisierung 1}
+ggplot(climate_data) +
+         geom_area(aes(x = Date, y = Mean, fill = Source)) +
+   labs(title = "Durschnittlicher Temperaturanstieg", x = "Jahr", y = "Durchschnitt")
+```
+
+```{r Visualisierung 2}
+ggplot(climate_data, aes(Date, Mean, group = Source)) +
+  geom_line(aes(colour = Source), position = "stack") + 
+  geom_point(aes(colour = Source), position = "stack") +
+  facet_wrap(~ Source, nrow = 2) +
+  labs(title = "", x = "Jahr", y = "Durchschnitt")
+```
+
