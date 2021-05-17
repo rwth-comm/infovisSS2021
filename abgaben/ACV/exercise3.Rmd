@@ -1,5 +1,6 @@
 ---
 title: "Exercise_03"
+author: "André Calero Valdez"
 output: html_document
 ---
 
