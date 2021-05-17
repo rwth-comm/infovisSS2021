@@ -1,0 +1,41 @@
+---
+title: "Exercise_02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(gganimate)
+library(gifski)
+library(gapminder)
+library(hrbrthemes)
+```
+
+
+```{r}
+bcr <- gapminder %>% 
+  filter(continent == "Europe") %>% 
+    ggplot(aes(x = country,y = pop, group = country, fill=country)) +
+        geom_tile(aes(y = pop / 2, height = pop), width = 0.9) +
+        geom_text(aes(label = country), hjust = "right", colour = "black", fontface = "bold", nudge_y = -100000) +
+        geom_text(aes(label = scales::comma(pop)), hjust = "left", nudge_y = 100000, colour = "black") +
+        coord_flip(clip="off") +
+        hrbrthemes::theme_ipsum(plot_title_size = 28, subtitle_size = 24, base_size = 20) +
+        theme(panel.grid.major.y=element_blank(),
+              panel.grid.minor.x=element_blank(),
+              legend.position = "none",
+              plot.margin = margin(1,1,1,2,"cm"),
+              axis.text.y=element_blank(),
+              axis.text.x=element_blank())+
+        transition_time(year) +
+        ease_aes('cubic-in-out') +
+        labs(title='Population growth in european countries between 1952 and 2007',
+             subtitle='Population in {round(frame_time,0)}',
+             x='European countries',
+             y='Population')
+
+animate(bcr, nframes = 55, fps = 3, width = 1200, height = 900)
+
+```
