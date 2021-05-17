@@ -8,6 +8,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggforce)
 
+library(ggridges)
+
 dat <- read_rds("../datasets/lincoln_temps.rds")
 
 ```
@@ -21,7 +23,8 @@ geom_sina(size = 0.75)+
 
 
 #Warum klappt das nicht?
-ggplot(dat, aes(month, mean_temp)) +
+ggplot(dat) +
+  aes(y = month, x = mean_temp) +
 geom_density_ridges(fill = "skyblue")+
   labs(y = "Temperatur Mittelwerte (°F)", x= "Monat", title = "Durchschnittliche Tagestemperaturen je Monat im Jahr 2016 in Lincoln, Nebraska", subtitle = "n=366", caption="")+
   theme_minimal()

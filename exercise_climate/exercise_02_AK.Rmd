@@ -8,7 +8,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
 library(ggridges)
-climate_data <- read_csv("datasets/climate_monthly.csv")
+climate_data <- read_csv("../datasets/climate_monthly.csv")
 ```
 
 

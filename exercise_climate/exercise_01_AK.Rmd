@@ -8,7 +8,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggforce)
 
-dat <- read_rds("datasets/lincoln_temps.rds")
+dat <- read_rds("../datasets/lincoln_temps.rds")
 
 ```
 
