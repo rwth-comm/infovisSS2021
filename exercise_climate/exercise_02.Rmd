@@ -14,8 +14,6 @@ climate_data <- read_csv("../datasets/climate_monthly.csv")
 
 
 ```{r, include=FALSE}
-
-
 climate_data %>% 
   filter(Source == "GISTEMP") %>% 
   mutate(year = year(Date),
@@ -92,8 +90,5 @@ animate(
 )
 
 library(gganimate)
-
-
-
 ```
 
