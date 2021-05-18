@@ -1,0 +1,99 @@
+---
+title: "Exercise_03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(gganimate)
+options(gganimate.nframes = 30)
+library(gifski)
+library(gapminder)
+```
+
+```{r}
+gapminder %>%  
+  select(country, pop, year, continent, gdpPercap) %>%  
+  group_by(year) %>%  
+  arrange(year, -gdpPercap) %>%  
+  mutate(rank = 1:n()) %>%  
+  filter(rank <= 10) ->  
+gapminder_gdpPercap
+
+gapminder_gdpPercap %>%  
+  ggplot() +  
+  aes(xmin = 0 ,  
+      xmax = gdpPercap,
+      ymin = rank - .45,  
+      ymax = rank + .45,  
+      y = rank,
+      fill = continent) +  
+  facet_wrap(~ year) +  
+  geom_rect(alpha = .6) +  
+  scale_x_continuous(  
+    limits = c(-30000, 120000),  
+    breaks = c(0, 20000, 40000, 60000, 80000, 100000, 120000)) +  
+  geom_text(col = "gray13",  
+            hjust = "right",  
+            aes(label = country),  
+            x = -30) +  
+  scale_y_reverse() +  
+  labs(fill = NULL,
+       x = "GDP per capita", 
+       y = "",
+       subtitle = "Top 10 highest GDP per capita from 1952 to 2007") +
+  theme(axis.text.y = element_blank()) +
+  theme(axis.ticks.y = element_blank()) +
+  facet_null() +
+  geom_text(x = 90000 , y = -10,  
+            aes(label = as.character(year)),  
+            size = 24, col = "grey18") +  
+  aes(group = country) +  
+  gganimate::transition_time(year) -> anim
+
+animate(anim, fps = 7, nframes = 130, end_pause = 15)
+```
+
+```{r}
+gapminder %>%  
+  select(country, pop, year, continent) %>%  
+  group_by(year) %>%  
+  arrange(year, -pop) %>%  
+  mutate(rank = 1:n()) %>%  
+  filter(rank <= 10) ->  
+gapminder_ranked
+
+gapminder_ranked %>%  
+  ggplot() +  
+  aes(xmin = 0 ,  
+      xmax = pop / 1000000,
+      ymin = rank - .45,  
+      ymax = rank + .45,  
+      y = rank) +  
+  facet_wrap(~ year) +  
+  geom_rect(alpha = .7) +  
+  scale_x_continuous(  
+    limits = c(-355, 1400),  
+    breaks = c(0, 400, 800, 1200)) +  
+  geom_text(col = "gray13",  
+            hjust = "right",  
+            aes(label = country),  
+            x = -50) +  
+  scale_y_reverse() +  
+  labs(fill = NULL,
+       x = 'Population (millions)', 
+       y = "",
+       title = ) +
+  theme(axis.text.y = element_blank()) +
+  theme(axis.ticks.y = element_blank()) +
+  theme(axis.line.y = element_blank()) +  
+  facet_null() +  
+  geom_text(x = 1000 , y = -10,  
+            family = "Times",  
+            aes(label = as.character(year)),  
+            size = 30, col = "grey18") +  
+  aes(group = country) +  
+  gganimate::transition_time(year)
+```
