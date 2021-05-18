@@ -34,3 +34,23 @@ ggplot(climate_2000, aes(x = year(Date), y = Mean, group = year(Date))) +
           y = "Sommermonate")
 ```
 
+```{r}
+# Live-Übung
+ggplot(climate_data) +
+aes(x = month(Date), y = Mean, color = Mean, group = year(Date)) +
+geom_line() +
+coord_polar() +
+scale_x_continuous(limits = c(0,12), breaks = 1:12) +
+geom_hline(yintercept = 0, color = "white", size = 2) +
+scale_color_viridis_c(option = "D") +
+gganimate::transition_reveal(year(Date)) +
+labs(title = "Temperatur im Jahr: {frame_along}") -> anim
+
+animate(
+  anim,
+  fps = 15,
+  nframe = 137,
+  renderer = gifski_renderer()
+)
+```
+
