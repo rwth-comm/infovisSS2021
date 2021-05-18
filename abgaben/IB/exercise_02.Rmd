@@ -1,0 +1,34 @@
+---
+title: "Exercise_02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(ggforce)
+climate_data <- read_csv("../datasets/climate_monthly.csv")
+```
+
+
+```{r, include=FALSE}
+climate_data <- climate_data %>% 
+  filter(Source == "GISTEMP") %>% 
+  mutate(year = year(Date),
+         month = month(Date))
+```
+
+```{r}
+climate_data %>%
+  filter(year >= 2000, year <= 2016) %>%
+  ggplot(
+    aes(x = as.factor(year), 
+        y = Mean)) +
+  geom_violin(fill = "lightblue", color = NA) +
+  geom_sina(size = 0.75) +
+  labs(x = "year",
+       y = "mean global surface temperature change",
+    title = "Global surface temperature increases over time",
+    subtitle = "Global surface temperature change from 2000 to 2016 in violin plot")
+``
