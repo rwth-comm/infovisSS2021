@@ -1,0 +1,37 @@
+---
+title: "Exercise_03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(gganimate)
+options(gganimate.nframes = 30)
+library(gifski)
+library(gapminder)
+```
+
+
+
+```{r}
+gapminder %>% 
+  filter(continent %in% c("Africa", "Americas", "Asia", "Europe", "Oceania")) %>% 
+  ggplot() +
+  aes(x = fct_reorder(continent, pop) , y = pop, fill = continent) +
+  coord_flip() +
+  geom_col() +
+  scale_y_continuous(name = "Population in Milliarden", labels = c("0","1", "2", "3", "4")) +
+  labs(title = "Jahr: {frame_time}",  x = NULL) +                     
+  guides(fill = FALSE) + 
+  gganimate::transition_time(year) +
+  NULL -> anim
+
+
+animate(
+  anim, fps = 60,
+  nframes = 240,
+  end_pause = 10
+)
+```

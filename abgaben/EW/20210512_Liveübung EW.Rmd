@@ -1,0 +1,40 @@
+---
+title: "20210512_Liveübung EW"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(gganimate)
+
+climate_data <- read_csv("./datasets/climate_monthly.csv")
+```
+
+```{r, include=FALSE}
+climate_data %>% 
+  filter(Source == "GISTEMP") %>% 
+  mutate(year = year(Date),
+         month = month(Date))
+```
+
+
+```{r}
+climate_data %>%
+  filter(Source == "GISTEMP") %>%
+  mutate(year = year(Date),
+         month = month(Date)) %>%
+         ggplot()+
+         aes(x = month, y = Mean, color = Mean, group = year)+
+         geom_line()+
+         coord_polar()+
+         scale_x_continuous(limits = c(0,12), breaks = 1:12)+
+         geom_hline(yintercept = 0, color = "black", size = 2.5)+
+         scale_color_viridis_c(option = "C")+
+         gganimate::transition_reveal(year)+
+         labs(title = "Temperatur im Jahr:{frame_along}") -> anim
+
+animate(anim, fps = 4, nframes = 137)
+```
+
