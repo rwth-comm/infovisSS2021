@@ -1,5 +1,5 @@
 ---
-title: "exercise_02_homework_MK"
+title: "exercise_01+02_MK"
 output: html_document
 ---
 
@@ -10,9 +10,9 @@ library(lubridate)
 library(ggridges)
 library(psych)
 library(ggforce)
-climate_data <- read_csv("datasets/climate_monthly.csv")
+climate_data <- read_csv("../../datasets/climate_monthly.csv")
 
-dat <- read_rds("datasets/lincoln_temps.rds")
+dat <- read_rds("../../datasets/lincoln_temps.rds")
 ```
 
 
@@ -82,5 +82,26 @@ ggplot(aes(x = as.factor(year), y = Mean)) +
        caption = "points indicate single measurements, violins show KDE",
        subtitle = "development of mean global surface temperature change")
 
+```
+
+```{r, Liveübung vom 12. Mai}
+library(gganimate)
+library(gifski)
+
+data2 %>%
+         ggplot() +
+         aes(x = month, y = Mean, color = Mean, group = year)+
+         geom_line()+
+         coord_polar() +
+        # macht aus Koordinatensystem ein Polarkoordinatensystem
+         scale_x_continuous(limits = c(0,12), breaks = 1:12) +
+         geom_hline(yintercept = 0, color = "black", size = 1.5) +
+        # Referenzlinie am "Nullpunkt"
+         scale_color_viridis_c(option = "B")+
+         gganimate::transition_reveal(year)+
+        # Animation deckt zeitlichen Verlauf über einzelne Jahre auf
+         labs(title = "Temperatur im Jahr:{frame_along}") -> anim
+
+         animate(anim, fps = 4, nframes = 137)
 ```
 
