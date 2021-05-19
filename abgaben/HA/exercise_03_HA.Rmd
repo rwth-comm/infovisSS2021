@@ -22,7 +22,7 @@ gapminder %>%
   aes(x = fct_reorder(continent, pop) , y = pop, fill = continent) +
   coord_flip() +
   geom_col() +
-  scale_y_continuous(name = "Population in Millionen", labels = c("0","1", "2", "3", "4")) +
+  scale_y_continuous(name = "Population in Milliarden", labels = c("0","1", "2", "3", "4")) +
   labs(title = "Jahr: {frame_time}",  x = NULL) +                     
   guides(fill = FALSE) + 
   gganimate::transition_time(year) +
