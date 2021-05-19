@@ -49,22 +49,27 @@ animate(
 
 
 ```{r}
-data<-gapminder%>%filter(continent=="Europe")
+data <- gapminder %>% filter(continent == "Europe")
 
-data %>% 
-ggplot()+
-  aes(x=pop, y=fct_reorder(country, pop),fill=country)+
-  geom_col(fill="light grey")+
-  guides(fill= FALSE)+
-   aes(fill = country) +
-  labs(x="Total Population", y="")+
-  theme_minimal()+
-  theme(panel.grid.major.y=element_blank(), panel.grid.minor.x=element_blank())+
-  windows(width=12/2.54, height=10/2.54)+
- scale_x_continuous(breaks=c(0, 20000000, 40000000, 60000000, 80000000,100000000),labels=c("0","20M", "40M", "60M","80M","100M"))+
-  gganimate::transition_reveal(year)+
-  labs(subtitle= "the development of europeans population differentiated by year from 
-       1952 to 2007", title="Europeans population in:{frame_along}")-> anim
+data %>%
+  ggplot() +
+  aes(x = pop,
+      y = fct_reorder(country, pop),
+      fill = fct_reorder(country,pop)) +
+  geom_col() +
+  guides(fill = FALSE) +
+  labs(x = "Total Population", y = "") +
+  theme_minimal() +
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.x = element_blank()) +
+  #windows(width = 12 / 2.54, height = 10 / 2.54) +
+  scale_x_continuous(
+    breaks = c(0, 20000000, 40000000, 60000000, 80000000, 100000000),
+    labels = c("0", "20M", "40M", "60M", "80M", "100M")
+  ) +
+  #facet_wrap(vars(year))
+  gganimate::transition_reveal(year) +
+  labs(subtitle = "the development of europeans population differentiated by year from\n1952 to 2007", title = "Europeans population in:{frame_along}") -> anim
 
 animate(anim, fps = 3, nframes = 40, end_pause = 10)
 ```

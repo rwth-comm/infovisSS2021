@@ -16,7 +16,7 @@ library(gapminder)
 
 ```{r}
 gapminder %>%  
-    filter(country %in% c("Germany", "France", "Spain", "Netherlands", "Belgium", "Portugal", "Luxemburg", "Poland")) %>% 
+    filter(country %in% c("Germany", "France", "Spain", "Netherlands", "Belgium", "Portugal", "Luxemburg", "Poland")) %>%
   # for each year we assign a rank
   group_by(year) %>%  
   arrange(year, -gdpPercap) %>%  # this is the variable we want to use for our race
@@ -61,6 +61,7 @@ ranked_by_year %>%
   aes(group = country) +
   gganimate::transition_time(year) -> anim
 
+anim
 ```
 
 
