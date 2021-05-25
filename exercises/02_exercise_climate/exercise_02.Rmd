@@ -9,7 +9,7 @@ library(tidyverse)
 library(lubridate)
 library(gganimate)
 library(gifski)
-climate_data <- read_csv("../datasets/climate_monthly.csv")
+climate_data <- read_csv("../../datasets/climate_monthly.csv")
 ```
 
 
