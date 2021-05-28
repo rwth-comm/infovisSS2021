@@ -40,7 +40,7 @@ movies %>% ggplot() +
 library(patchwork)
 
 (plot_1 + plot_2) / plot_2 +
-  plot_annotation(title = "My work") +
+  plot_annotation(title = "Frauen in Filmen") +
    theme_minimal() 
   
 ```
