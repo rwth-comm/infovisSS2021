@@ -9,7 +9,7 @@ library(tidyverse)
 library(lubridate)
 library(gganimate)
 
-climate_data <- read_csv("./datasets/climate_monthly.csv")
+climate_data <- read_csv("../../datasets/climate_monthly.csv")
 ```
 
 ```{r, include=FALSE}
@@ -36,5 +36,9 @@ climate_data %>%
          labs(title = "Temperatur im Jahr:{frame_along}") -> anim
 
 animate(anim, fps = 4, nframes = 137)
+```
+
+```{r}
+colorspace::hcl_palettes(type = "sequential", plot = TRUE)
 ```
 
