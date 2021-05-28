@@ -40,7 +40,7 @@ movies %>% ggplot() +
 library(patchwork)
 
 (plot_1 + plot_2) / plot_2 +
-  plot_annotation(title = "Repräsentation von Frauen in Filmen zwischen 1970 und 2020") +
+  plot_annotation(title = "Frauen in Filmen zwischen 1970 und 2020") +
    theme_minimal() 
   
 ```
