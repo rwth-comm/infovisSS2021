@@ -1,0 +1,208 @@
+---
+title: "Exercise_03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(gganimate)
+options(gganimate.nframes = 30)
+library(gifski)
+library(gapminder)
+```
+
+
+```{r}
+gapminder %>%  
+    filter(country %in% c("Germany", "France", "Spain", "Netherlands", "Belgium", "Portugal", "Luxemburg", "Poland")) %>% 
+  # for each year we assign a rank
+  group_by(year) %>%  
+  arrange(year, -gdpPercap) %>%  # this is the variable we want to use for our race
+  # assign ranking
+  mutate(rank = 1:n()) %>% 
+  filter(rank <= 10) -> # how many positions on the race?
+  ranked_by_year
+```
+
+```{r}
+#Meine Lösung
+ranked_by_year %>% 
+ggplot() +
+  aes(x = fct_reorder(country, gdpPercap) , y = gdpPercap, fill = country) +
+  geom_col() +
+  scale_y_continuous(name = "Life Expectation",limits = c(0,40000)) +
+  scale_x_discrete(name = "Country") +
+  gganimate::transition_time(year) +
+  labs (title = "Life Expectation in year: {frame_time}",
+          subtitle = "Bar Chart Race") -> anim
+
+animate(
+  anim,
+  fps = 15,
+  nframes = 240,
+  renderer = gifski_renderer()
+)
+
+```
+
+
+```{r}
+ranked_by_year %>%  
+  ggplot() +  
+  aes(xmin = 0 ,  
+      xmax = gdpPercap) +  
+  aes(ymin = rank - .45,  
+      ymax = rank + .45,  
+      y = rank) +  
+  facet_wrap(~ year) +  
+  geom_rect(alpha = .7) +
+  aes(fill = continent) +
+  scale_x_continuous(  
+    limits = c(-300000, NA),
+    breaks = c(0, 100000)
+   ) +  
+  geom_text(col = "gray13",
+            hjust = "right",
+            aes(label = country),
+            x = -50) +
+  scale_y_reverse() +
+  labs(fill = NULL, y = "") +
+  theme(axis.ticks.y = element_blank(), 
+        axis.text.y = element_blank()) +
+  facet_null() +
+  scale_x_continuous(  
+    limits = c(-50000, NA),
+    breaks = c(0, 100000)
+   ) +
+  geom_text(x = 80000 , y = -10,
+            #family = "Times",
+            aes(label = as.character(year)),
+            size = 20, col = "grey18") +
+  aes(group = country) +
+  gganimate::transition_time(year) -> anim
+
+```
+
+
+```{r}
+gapminder %>% names()
+gapminder %>% 
+  filter(country %in% c("Germany", "France", "Spain", "Netherlands", "Belgium")) %>% 
+  ggplot() +
+  aes(x = fct_reorder(country, gdpPercap) , y = gdpPercap, fill = country) +
+  coord_flip() +
+  geom_col() +
+  guides(fill = FALSE) + 
+  gganimate::transition_time(year) +
+  NULL -> anim
+
+
+animate(
+  anim, fps = 60,
+  nframes = 240,
+  end_pause = 10
+)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+library(jsonlite)
+raw <- read_json("https://www.openligadb.de/api/getmatchdata/bl1/2020")
+
+
+
+results <- data.frame()
+for(i in 1:length(raw)){
+  if(as.Date(raw[[i]]$MatchDateTime) >= today()) {
+    next;
+  }
+  date <- raw[[i]]$MatchDateTime
+  p1 <- raw[[i]]$Team1$TeamName
+  p2 <- raw[[i]]$Team2$TeamName
+  #raw[[i]]$MatchResults
+  g1 <- raw[[i]]$MatchResults[[1]]$PointsTeam1
+  g2 <- raw[[i]]$MatchResults[[1]]$PointsTeam2
+  
+  match_count <- raw[[i]]$Group$GroupOrderID
+  
+  row <- data.frame(datum = date, team1 = p1, team2 = p2, goals1 = g1, goals2 = g2, match_count = match_count)
+  results <- bind_rows(results, row)  
+}
+
+
+point_t1 <- function(g1, g2) {
+  if(g1 == g2) return (1)
+  if(g1 > g2) return (3)
+  if(g1 < g2) return (0)
+}
+
+point_t2 <- function(g1, g2) {
+  if(g1 == g2) return (1)
+  if(g1 > g2) return (0)
+  if(g1 < g2) return (3)
+}
+
+results %>% rowwise() %>% 
+  mutate(point_t1 = point_t1(goals1, goals2),
+                   point_t2 = point_t2(goals1, goals2)) %>% 
+  pivot_longer(cols = c(team1, team2)) %>% 
+  mutate(goals = ifelse(name == "team1", goals1, goals2)) %>% 
+  mutate(goal_diff = ifelse(name == "team1", goals1 - goals2, goals2 - goals1)) %>% 
+  mutate(points = ifelse(name == "team1", point_t1, point_t2)) %>% 
+  select(-goals1, -goals2, -point_t1, -point_t2, -name, team = value) %>% 
+  mutate(datum = as.Date(datum)) %>% 
+  group_by(team) %>% 
+  mutate(goals_c = cumsum(goals), 
+            goal_diff_c = cumsum(goal_diff),
+            points_c = cumsum(points)) %>% 
+  group_by(match_count) %>% 
+  arrange(desc(points_c)) %>% 
+  mutate(rank = 1:n()) %>% 
+  ggplot() +
+  aes(xmin = 0 ,  
+      xmax = points_c) +  
+  aes(ymin = rank - .45,  
+      ymax = rank + .45,  
+      y = rank,
+      fill = team) +
+  facet_wrap(vars(match_count)) +
+  geom_rect() +
+  scale_y_reverse() +
+    geom_text(col = "gray13",
+            hjust = "right",
+            aes(label = team),
+            x = -1) +
+  scale_x_continuous(limits = c(-40, NA), breaks = c(0,20,40,60,80)) +
+  aes(group = team) +
+  labs(title = "Spieltag {closest_state}") +
+  gganimate::transition_states(match_count, wrap = FALSE) +
+  guides(fill = FALSE) +
+  theme_minimal() +
+  facet_null() -> anim
+
+animate(
+  anim, 
+  fps = 20,
+  nframes = 560,
+  end_pause = 40
+)
+  
+
+
+```
+
