@@ -9,6 +9,8 @@ library(tidyverse)
 library(colorspace)
 library(ggthemes)
 library(ggtext)
+library(ggforce)
+library(ggdist)
 ```
 
 
@@ -46,7 +48,7 @@ movies %>% filter(budget != "NA", year==1970:2013) %>% ggplot() +
 library(patchwork)
 
 (plot_1 + plot_2) +
-  plot_annotation(title = "My work")
+  plot_annotation(title = "Neither rating nor budget seem to affect the outcome of the Bechdel test")
 
 ```
 
@@ -89,7 +91,7 @@ movies %>% filter(imdb_rating != "NA", year==1970:2013) %>% ggplot() +
 library(patchwork)
 
 (plot_1 + plot_3 + plot_2 + plot_4 ) +
-  plot_annotation(title = "My work")
+  plot_annotation(title = "Movie Ratings don't seem to affect the bechdel test")
 
 ```
 
