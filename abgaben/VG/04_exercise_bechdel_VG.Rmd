@@ -29,21 +29,37 @@ hcl_palettes("sequential (single-hue)", n = 7, plot = TRUE)
 
 ```{r}
 movies %>% ggplot() +
-  aes(x = year, y =  test) +
-  geom_jitter(aes(color = test)) -> plot_1 
+  aes(x = year, y =  clean_test) +
+  geom_jitter(aes(color = clean_test)) -> plot_1 
   
  
 movies %>% ggplot() +
-  aes(x = year, y =  test, group = year) +
+  aes(x = year, y =  clean_test, group = year) +
   geom_boxplot() -> plot_2
 
 library(patchwork)
 
 (plot_1 + plot_2) / plot_2 +
-  plot_annotation(title = "Frauen in Filmen zwischen 1970 und 2020") +
+  plot_annotation(title = "Frauen in Filmen zwischen\n 1970 und 2020") +
    theme_minimal() 
   
 ```
 
+```{r}
+raw_bechdel  %>% ggplot(aes(color = rating)) +
+  geom_point(aes(x = rating, y = year))  -> plot_1 
+  
+ 
+movies %>% ggplot() +
+  aes(x = year, y =  clean_test, group = year) +
+  geom_boxplot() -> plot_2
+
+library(patchwork)
+
+(plot_1 + plot_2) / plot_2 +
+  plot_annotation(title = "Frauen in Filmen zwischen\n 1970 und 2020") +
+   theme_minimal()
+
+```
 
 
