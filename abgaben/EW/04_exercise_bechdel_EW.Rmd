@@ -1,0 +1,89 @@
+---
+title: "Exercise 4"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(colorspace)
+library(ggthemes)
+library(gapminder)
+library(gifski)
+```
+
+
+```{r load_data}
+
+# Filme von 1970 bis 2020, wenig Informationen pro Film
+raw_bechdel <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-09/raw_bechdel.csv')
+# Filme von 1970 bis 2013, viele Informationen, viele Informationen pro Film
+
+movies <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-09/movies.csv')
+```
+
+```{r}
+hcl_palettes(type = "qualitative", plot = T, n = 9)
+hcl_palettes("sequential (single-hue)", n = 7, plot = TRUE)
+```
+
+
+
+```{r}
+movies %>% ggplot() +
+  aes(x = year, y =  as.numeric(intgross)) +
+  geom_point() -> plot_1
+
+movies %>% ggplot() +
+  aes(x = year, y =  as.numeric(domgross), group = year) +
+  geom_boxplot() -> plot_2
+
+library(patchwork)
+
+(plot_1 + plot_2) / plot_2 +
+  plot_annotation(title = "My work")
+```
+
+```{r}
+```
+
+
+```{r}
+movies%>% 
+  filter(year == 2000:2013) %>%
+  ggplot() +
+  aes(x = year, y =  as.numeric(metascore), color = binary) +
+  geom_point(shape = 1, size = 5)+ 
+  geom_smooth()+
+  theme_bw() +
+  xlab("Jahr") +
+  ylab("Metascore") +
+  scale_color_brewer(palette="Set1") -> plot_1
+
+movies %>% 
+  filter(year == 2000:2013) %>%
+  ggplot() +
+  aes(x = year, y =  as.numeric(imdb_rating), group = year) +
+  geom_boxplot()+
+  theme_bw() +
+  xlab("Jahr") +
+  ylab("Imdb Rating")-> plot_2
+
+library(patchwork)
+
+(plot_1 + plot_2) / plot_2 +
+  plot_annotation(title = "My homework") +
+  labs(subtitle = "")
+```
+
+
+```{r}
+movies%>%
+  select(year, binary, imdb_rating) -> movies_small
+```
+
+```{r}
+movies_small %>%
+  filter(year == 2010)-> movies_2010
+```
+
