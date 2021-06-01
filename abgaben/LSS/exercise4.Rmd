@@ -54,13 +54,13 @@ movies %>%
 
 ```{r}
 raw_bechdel %>% 
-  filter(year == 2000:2020) %>% 
+  filter(year == 2000:2013) %>% 
   ggplot(aes(x = year, y = rating, color = rating)) +
   geom_point() +
   geom_jitter() +
   scale_y_continuous(breaks = c(0, 1, 2 , 3 , 4)) +
   scale_color_continuous_sequential(palette = "Batlow") +
-  labs(x = "Year", y = "Bechdel-Rating", title = "Bechdel-Rating from 2000 to 2020") -> plot_4
+  labs(x = "Year", y = "Bechdel-Rating", title = "Bechdel-Rating from 2000 to 2013") -> plot_4
 
 library(patchwork)
 
@@ -70,7 +70,6 @@ library(patchwork)
 
 ```{r}
 movies %>%
-  filter(year == 2000:2013) %>%
   ggplot() +
   aes(x = year, y = budget, group = year) +
   geom_boxplot()
