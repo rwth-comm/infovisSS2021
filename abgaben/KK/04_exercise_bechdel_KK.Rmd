@@ -1,0 +1,130 @@
+---
+title: "Exercise 4"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(colorspace)
+library(ggthemes)
+library(extrafont)
+font_import()
+loadfonts(device="win")
+fonts()
+```
+
+
+```{r load_data}
+# Filme von 1970 bis 2020, wenig Informationen pro Film
+raw_bechdel <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-09/raw_bechdel.csv')
+# Filme von 1970 bis 2013, viele Informationen, viele Informationen pro Film
+
+movies <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-09/movies.csv') %>% 
+  separate_rows(genre, sep = ", ")
+```
+
+
+```{r}
+
+
+
+movies %>%
+  filter(genre != "NA") %>% 
+  ggplot() +
+  aes(x = reorder(genre, genre, function(x) length(x))) +
+  geom_bar() +
+  coord_flip() +
+  xlab(NULL) +
+  ylab(NULL) +
+  scale_y_continuous(limits = c(0, 800), breaks = c(0, 200, 400, 600, 800)) +
+  theme_minimal() +
+  theme(text = element_text(family = "Roboto", face="bold", size=12)) +
+  labs(title = "Welche Genres sind am häufigsten vertreten?") +
+  NULL -> abb1
+
+#action adventure thriller
+
+movies %>%
+  filter(genre != "NA") %>% 
+  filter(genre %in% c("Action", "Adventure", "Thriller", "Drama", "Comedy")) %>% 
+  ggplot() +
+  aes(x = reorder(genre, genre, function(x) length(x)), fill = binary) +
+  geom_bar(position = "dodge") +
+  coord_flip() +
+  xlab(NULL) +
+  ylab(NULL) +
+  scale_y_continuous(limits = c(0, 400), breaks = c(0, 200, 400)) +
+  theme_minimal() +
+  theme(text = element_text(family = "Roboto", face="bold", size=12)) +
+  labs(title = "Top 5 Genres: Bechdel Test",
+       subtitle = "Der Bechdel Test ist öfter fehlgeschlagen",
+       fill = "") +
+  scale_fill_manual(
+    values = c(FAIL= "#D55E00", PASS = "#56B4E9")
+  ) +
+  NULL -> abb2
+
+
+
+movies %>% 
+  filter(genre != "NA") %>% 
+  filter(genre %in% c("Action", "Adventure", "Thriller", "Drama", "Comedy")) %>% 
+  ggplot() +
+  aes(x = year,
+      fill = binary) +
+  facet_grid(~genre) +
+  geom_bar() +
+  coord_flip() +
+  xlab(NULL) +
+  ylab(NULL) +
+  #scale_y_continuous(limits = c(0, 400), breaks = c(0, 200, 400)) +
+  theme_minimal() +
+  theme(text = element_text(family = "Roboto", face="bold", size=12)) +
+  labs(title = "Genre-Häufigkeit in Abhängigkeit vom Bechdel Test über die Zeit",
+       subtitle = "Das Genre 'Drama' hat den höchsten Zuwachs erhalten",
+       fill = "") +
+  scale_fill_manual(
+    values = c(FAIL= "#D55E00", PASS = "#56B4E9")
+  ) +
+  NULL -> abb3
+
+```
+
+
+
+```{r}
+library(patchwork)
+
+(abb1 + abb2) / abb3 +
+  plot_annotation(title = "Filmgenres und Bechdel Test")
+
+```
+
+
+
+
+```{r}
+hcl_palettes(type = "qualitative", plot = T, n = 9)
+hcl_palettes("sequential (multi-hue)", n = 7, plot = TRUE)
+```
+
+
+
+```{r}
+movies %>% ggplot() +
+  aes(x = year, y =  as.numeric(intgross)) +
+  geom_point() -> plot_1
+
+movies %>% ggplot() +
+  aes(x = year, y =  as.numeric(domgross), group = year) +
+  geom_boxplot() -> plot_2
+
+library(patchwork)
+
+(plot_1 + plot_2) / plot_2 +
+  plot_annotation(title = "My work")
+```
+
+
+
