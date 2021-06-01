@@ -1,0 +1,81 @@
+---
+title: "Exercise 4"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(colorspace)
+library(ggthemes)
+```
+
+
+```{r load_data}
+
+# Filme von 1970 bis 2020, wenig Informationen pro Film
+raw_bechdel <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-09/raw_bechdel.csv')
+# Filme von 1970 bis 2013, viele Informationen, viele Informationen pro Film
+
+movies <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-09/movies.csv')
+```
+
+```{r}
+hcl_palettes(type = "qualitative", plot = T, n = 9)
+hcl_palettes("sequential (single-hue)", n = 7, plot = TRUE)
+```
+
+
+
+```{r}
+movies %>% ggplot() +
+  aes(x = year, y =  as.numeric(intgross)) +
+  geom_point() -> plot_1
+
+movies %>% ggplot() +
+  aes(x = year, y =  as.numeric(domgross), group = year) +
+  geom_boxplot() -> plot_2
+
+library(patchwork)
+
+(plot_1 + plot_2) / plot_2 +
+  plot_annotation(title = "My work")
+```
+```{r}
+movies %>% 
+  filter(year == 2000:2013) %>%
+  ggplot(aes(x = year, y = metascore, color = metascore)) +
+  geom_point() +
+  geom_jitter() +
+  scale_y_continuous(breaks = c(0, 20 ,40 ,60 ,80)) +
+  scale_color_continuous_sequential(palette = "Batlow") +
+  labs(x = "Year", y = "Metascore", title = "Metascores from 2000 to 2013") -> plot_3
+```
+
+```{r}
+raw_bechdel %>% 
+  filter(year == 2000:2020) %>% 
+  ggplot(aes(x = year, y = rating, color = rating)) +
+  geom_point() +
+  geom_jitter() +
+  scale_y_continuous(breaks = c(0, 1, 2 , 3 , 4)) +
+  scale_color_continuous_sequential(palette = "Batlow") +
+  labs(x = "Year", y = "Bechdel-Rating", title = "Bechdel-Rating from 2000 to 2020") -> plot_4
+
+library(patchwork)
+
+(plot_3 + plot_4)
+```
+
+
+```{r}
+movies %>%
+  filter(year == 2000:2013) %>%
+  ggplot() +
+  aes(x = year, y = budget, group = year) +
+  geom_boxplot()
+
+```
+
+
+
