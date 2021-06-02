@@ -1,0 +1,68 @@
+---
+title: "Visualisierung der Bundestagswahl 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+
+# Daten laden
+```{r}
+
+parties <- c("CDU", "SPD")
+perc_votes <- c(23.3, 12.4)
+
+election <- data.frame(parties, perc_votes)
+
+```
+
+
+# Daten anpassen 
+Daten werden gefiltert und sortiert
+```{r}
+
+
+```
+
+
+Plots für das Bundesland generieren
+```{r}
+
+p <- election %>% ggplot()
+
+```
+
+
+
+
+# Visualisierung mit transparentem Hintergrund speichern
+```{r}
+p <- p +
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+p
+
+ggsave(p, filename = "ergebnis_NRW.png",  bg = "transparent")
+
+```
+
+
+# Automatisches Plotten mit geofacet
+```{r}
+# install.packages("geofacet")
+
+library(geofacet)
+
+get_grid_names()
+
+```
+
