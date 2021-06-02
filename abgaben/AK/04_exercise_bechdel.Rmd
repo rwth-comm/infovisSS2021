@@ -1,0 +1,92 @@
+---
+title: "Exercise 4"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(colorspace)
+library(ggthemes)
+library(patchwork)
+```
+
+
+```{r load_data}
+
+# Filme von 1970 bis 2020, wenig Informationen pro Film
+raw_bechdel <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-09/raw_bechdel.csv')
+# Filme von 1970 bis 2013, viele Informationen, viele Informationen pro Film
+
+movies <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-09/movies.csv')
+```
+
+```{r}
+hcl_palettes(type = "qualitative", plot = T, n = 9)
+hcl_palettes("sequential (single-hue)", n = 7, plot = TRUE)
+```
+
+
+```{r}
+#a
+movies %>%
+  mutate(binary = recode(binary, `FAIL` = "durchgefallen", `PASS` = "bestanden")) %>%
+  filter(year >= 2000, year <= 2013) %>%
+  ggplot(aes(x = year, group = binary, fill = binary))+
+  theme_minimal()+
+  #theme(legend.box.background = element_rect(fill = NULL ,color = "black"),
+  #  legend.box.margin = margin(5, 5, 5, 5)) +
+  labs(x = NULL,
+       y = "Anzahl der Filme",
+       fill = "Bechdel-Test",
+       title = "2009 sind besonders viele Filme im Bechdel-Test durchgefallen",
+       subtitle = "Anzahl bestandener und durchgefallener Filme zwischen 2000 und 2013 im Histogramm")+
+  scale_fill_manual(values = c(durchgefallen = "#ee0000", bestanden = "#00cd00")) +
+geom_bar(position = "dodge") -> a
+
+
+#b
+movies %>%
+  filter(year == "2009") -> movies_2009
+movies_2009 %>%
+  filter(binary == "FAIL") -> fails_2009
+
+clean_test_2009 <- data.frame("category" = c('notalk', 'nowomen', 'dubious', 'men'),
+                   "amount" = c(40, 11, 11, 20))
+
+ggplot(clean_test_2009, aes(x="", y=amount, fill=category)) +
+      geom_bar(stat="identity", width=1) +
+      coord_polar("y", start=0) +
+      theme_minimal()+
+      geom_text(aes(label = paste0(amount)), position = position_stack(vjust = 0.5)) +
+      scale_fill_discrete_qualitative(palette = "Dark3") +
+      labs(x = NULL, 
+           y = NULL, fill = NULL, 
+           title = "2009 sind Filme größtenteils\ndurchgefallen, da Frauen\nnicht sprechen",
+           subtitle = "Verteilung der Gründe für das Durchfallen\nim Kreisdiagramm") -> b
+
+
+#c
+movies_2009 %>%
+  mutate(binary = recode(binary, `FAIL` = "durchgefallen", `PASS` = "bestanden")) %>%
+  ggplot(aes(x = binary, y = budget, fill = binary)) +
+  theme_minimal()+
+  theme(legend.position = "none") +
+  labs(x = NULL,
+       y = "Budget",
+       fill = "Bechdel-Test",
+       title = "2009 ist das Budget der durchgefallenen\nFilme geringfügig höher als das der\nFilme, die den Test bestanden haben",
+       subtitle = "Budget der bestandenen und durchgefallenen\nFilme im Boxplot")+
+  scale_fill_manual(values = c(durchgefallen = "#ee0000", bestanden = "#00cd00")) +
+  scale_y_continuous(
+  limits = c(0, 100000000),
+  breaks = c(0, 25000000, 50000000, 75000000,100000000),
+  labels = c("0", "$25M", "$50M", "$75M", "$100M"))+
+  geom_boxplot()  -> c
+
+
+#Alle zusammen
+a / (b + c)
+```
+
+
