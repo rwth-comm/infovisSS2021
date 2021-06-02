@@ -76,7 +76,8 @@ read_csv2(csv_path, skip = 7) %>% filter(X3 == 99) %>%
          AFD = Endgültig_21) %>% 
   pivot_longer(cols = -c(land, zweitstimmen)) %>% 
   group_by(land) %>% 
-  mutate(prozent = value / zweitstimmen) -> votes
+  mutate(prozent = value / zweitstimmen) %>% 
+  na.omit() -> votes
 
 
 geofacet::get_grid_names()
