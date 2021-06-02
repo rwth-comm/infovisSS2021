@@ -53,4 +53,34 @@ library(patchwork)
 
 ```
 
+# erweiterte Hausaufgabe 
+
+```{r}
+
+raw_bechdel %>% 
+  filter(year == 1970:2013) %>%
+  group_by(year) %>%
+  summarise(n = n()) %>%
+  # Wir wissen hier nicht, wie wir die summarise Funktion im weiteren Verlauf plotten können.
+  ggplot() +
+  aes(x = year, y =  as.numeric(rating), color = rating) +
+  geom_point() +
+  geom_jitter() +
+  scale_color_continuous_sequential(palette = "Peach") +
+  labs(x = "Jahr", y = "Bechdelwert") -> plot_1
+
+movies %>% 
+  ggplot() +
+  aes(x = year, y =  as.numeric(imdb_rating), group = year, color = imdb_rating) +
+  geom_point() +
+  geom_jitter() +
+  scale_color_continuous_sequential(palette = "Mint") +
+  labs(x = "Jahr", y = "IMDB Wert") -> plot_2
+
+library(patchwork)
+
+(plot_1 + plot_2) +
+  plot_annotation(title = "Ab dem Jahr 1995 ist die Rolle von Frauen in Filmen präsenter", subtitle = "Vergleich von IMDB_Rating und Bechdel Test im Punktdiagramm")
+
+```
 
