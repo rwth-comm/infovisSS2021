@@ -7,7 +7,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
-climate_data <- read_csv("../datasets/climate_monthly.csv")
+climate_data <- read_csv("../../datasets/climate_monthly.csv")
 ```
 
 ```{r, include=FALSE}

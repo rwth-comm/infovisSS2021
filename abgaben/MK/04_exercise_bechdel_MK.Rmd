@@ -1,0 +1,117 @@
+---
+title: "Exercise 4 (Bechdel Test) von Maike Keil"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(colorspace)
+library(ggthemes)
+library(psych)
+```
+
+
+```{r load_data}
+
+# Filme von 1970 bis 2020, wenig Informationen pro Film
+raw_bechdel <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-09/raw_bechdel.csv')
+# Filme von 1970 bis 2013, viele viele Informationen pro Film
+
+movies <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-09/movies.csv')
+```
+
+```{r Farbpaletten}
+hcl_palettes(type = "qualitative", plot = T, n = 9)
+hcl_palettes("sequential (single-hue)", n = 7, plot = TRUE)
+```
+
+```{r}
+
+movies %>%
+  ggplot(aes(x = binary)) + geom_bar()
+
+#Plot 1 - Comparison Bechdel Test PASS or FAIL in relation to film's genre
+
+# Jeden Eintrag mehrfach listen für jede Kategorie einmal
+movies %>% separate_rows(genre, sep = ", ") -> movies_separated_genre
+
+movies_separated_genre %>%
+ filter(genre %in% c("Action", "Adventure", "Comedy", "Crime", "Drama", "Thriller" )) %>%
+  mutate(genre = fct_infreq(genre)) %>%
+  ggplot(aes(y = fct_rev(genre), fill = binary)) + geom_bar(position = "dodge") +
+  scale_x_continuous(limits = c(0, 400), breaks = c(0, 100, 200, 300, 400), expand = c(0,0)) +
+  scale_fill_discrete_qualitative(palette = "Set 2") +
+  labs(x = "count", y = "", title = "In all main genres more movies failed \nthan passed the Bechdel Test") +
+  scale_y_discrete(expand = expansion(add = c(0.5, 0.6))) +
+  theme_minimal_vgrid(12) + 
+  theme(axis.text.y = element_text(vjust = 0.5)) +
+  theme(legend.box.background = element_rect(color = "grey"), legend.box.margin = margin(7, 7, 7, 7)) -> myplot1
+
+#Plot 2 - Harry Potter movies, their domestic gross and bechdel test result
+
+movies %>% 
+  filter(str_detect(title, "Harry Potter")) -> movies_HP
+
+movies_HP %>%
+  mutate(title = fct_reorder(title, year)) %>%
+  mutate(domgross_in_million = as.numeric(domgross)/1000000) %>%
+  ggplot(aes(y = title, x = domgross_in_million, fill = binary)) + geom_col() +
+  scale_x_continuous(limits = c(0, 400), expand = c(0,0)) +
+  scale_fill_discrete_qualitative(palette = "Set 2") +
+  labs(x = "Domestic gross in release year (in Million)", y = "", title = "The last Harry Potter film was the most \npopular one but yet failed the Bechdel Test") +
+  scale_y_discrete(expand = expansion(add = c(0.5, 0.6))) +
+  theme_minimal_vgrid(12) + 
+  theme(axis.text.y = element_text(vjust = 0.5)) +
+  theme(legend.box.background = element_rect(color = "grey"), legend.box.margin = margin(7, 7, 7, 7)) -> myplot2
+
+#Plot 3 - Big Budget Films, their Profitability and 
+
+movies %>%
+  filter(year >= 2000) %>% 
+  mutate(profitability = as.numeric(domgross)/budget) %>%
+  mutate(profitability =  round(profitability, 2))-> movies_with_profitability
+
+movies_with_profitability %>%
+  top_n(10, budget) %>%
+  mutate(title = fct_reorder(title, profitability)) %>%
+  ggplot(aes(x = profitability, y = title, fill = binary)) +
+  geom_col() +
+  scale_x_continuous(limits = c(0, 2), expand = c(0,0)) +
+  scale_fill_discrete_qualitative(palette = "Set 2") +
+  labs(x = "Profitability (Domestic gross/film budget)", y = "", title = "The most profitable big budget films still \nfailed the Bechdel Test") +
+  scale_y_discrete(expand = expansion(add = c(0.5, 0.6))) +
+  theme_minimal_vgrid(12) + 
+  theme(axis.text.y = element_text(vjust = 0.5)) +
+  theme(legend.box.background = element_rect(color = "grey"), legend.box.margin = margin(7, 7, 7, 7)) -> myplot3
+  
+
+# "Zusammenkleben" meiner 3 Plots
+
+#HILFE: Das zusammenkleben der Plots funktioniert zwar prinzipiel, sieht aber furchtbar aus und macht das ganze sorgfälige "Finetuning" zu nichte
+
+(myplot1 + myplot3) / myplot1 + 
+  plot_annotation(title = "Bechdel Test: A Comparison among genre, big budget movies and the Harry Potter Series")
+
+
+
+```
+
+
+```{r, Beispiel/Vorlage}
+movies %>% ggplot() +
+  aes(x = year, y =  as.numeric(intgross)) +
+  geom_point() -> plot_1
+
+movies %>% ggplot() +
+  aes(x = year, y =  as.numeric(domgross), group = year) +
+  geom_boxplot() -> plot_2
+
+library(patchwork)
+
+(plot_1 + plot_2) / plot_2 +
+  plot_annotation(title = "My work")
+```
+
+
+
