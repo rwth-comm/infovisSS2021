@@ -1,0 +1,123 @@
+---
+title: "Exercise 4"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(colorspace)
+library(ggthemes)
+library(RColorBrewer)
+```
+
+
+```{r load_data}
+
+# Filme von 1970 bis 2020, wenig Informationen pro Film
+raw_bechdel <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-09/raw_bechdel.csv')
+# Filme von 1970 bis 2013, viele Informationen, viele Informationen pro Film
+
+movies <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-09/movies.csv')
+
+movies<- movies%>% 
+  mutate(across(contains("gross"),parse_number))
+```
+
+```{r}
+hcl_palettes(type = "qualitative", plot = T, n = 9)
+hcl_palettes("sequential (single-hue)", n = 7, plot = TRUE)
+```
+
+
+
+```{r}
+movies %>% ggplot() +
+  aes(x = year, y =  as.numeric(intgross)) +
+  geom_point() -> plot_1
+
+movies %>% ggplot() +
+  aes(x = year, y =  as.numeric(domgross), group = year) +
+  geom_boxplot() -> plot_2
+
+library(patchwork)
+
+(plot_1 + plot_2) / plot_2 +
+  plot_annotation(title = "My work")
+```
+
+
+
+```{r}
+
+#Abgabe
+
+  raw_bechdel %>%
+  filter(year >= 1960)%>%
+   count(year, rating)%>%
+  ggplot(aes(year,n, fill=rating))+
+  geom_col(width=0.75)+
+  labs(x = "year", y = "number of movies")+
+  theme_minimal()+
+ scale_fill_continuous_sequential(palette="Mint", end=0.8, rev=FALSE)+
+  labs(title = "Too many films still don´t pass the \n Bechdel-Test:", subtitle= "The bechdel test is passed if a movie has \n 1) two women \n 2) who talk to each other for more than 2 minutes \n 3) about something other then a man")-> plot_3
+  
+#scale_fill_continuous_sequential(palette= "Inferno", begin=0.5, end=0.8, rev=FALSE)+
+  
+movies%>%
+ggplot(aes(intgross, fill=binary))+
+  geom_density(alpha= .8, rel_min_height= 0.01, color= "gray")+
+  scale_x_log10(breaks = c(10000, 1000000, 100000000),labels= c("10k","1M", "100M"))+
+  theme_minimal()+
+  theme(legend.title = element_blank())+
+  scale_fill_manual(values = c(FAIL= "#163832", PASS="#aaf0d1"))+
+  labs(x= "international gross in release year",y=NULL, title= "But as you can see here movies\nwhich fail the test in gerneral has\na higher international gross:")->plot_4
+  
+  
+
+movies%>%
+  separate_rows(genre)%>%
+  filter(genre=="Action"| genre=="Comedy"| genre== "Biography"| genre=="Fantasy")%>%
+ggplot(aes(intgross, genre, fill=binary))+
+  geom_boxplot(alpha=.8)+
+  labs(x= "international gross in release year", y= "film genre", title= "...especially fantasy, comedy and \n action movies (and Biographys?)")+
+  scale_x_log10(breaks = c(10000, 1000000, 100000000), labels= c("10k","1M", "100M"))+
+  theme_minimal()+
+  theme(legend.title = element_blank())+
+  scale_fill_manual(values = c(FAIL= "#163832", PASS="#aaf0d1"))->plot_5
+
+
+plot_3+(plot_4/plot_5)+
+  plot_annotation(title = "Sex sells in the film industry")
+```
+
+
+```{r}
+```{r}
+#andere Ideen: 
+
+movies%>% 
+  count(year, binary) %>%
+  ggplot(aes(year,n,  fill= binary))+
+  geom_col()+
+  labs(x = "year", y = "number of movies")+
+  theme_minimal()+
+  labs(title = "To many films still don´t pass the Bechdel-Test", subtitle= "The bechdel test is passed if a movie has two women who talk to each other for more than 2 minutes about something other then a man")
+
+
+movies%>%
+  separate_rows(genre)%>%
+ggplot(aes(intgross, fill=binary))+
+  geom_density(alpha= .5)+
+  facet_wrap(~genre)+
+  scale_x_log10(breaks = c(10000, 1000000, 100000000), labels= c("10k","1M", "100M"))+
+  theme_minimal()+
+  labs(x= "international gross in release year", y="")
+```
+```
+
+
+
+
+
+
