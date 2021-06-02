@@ -1,0 +1,114 @@
+---
+title: "Exercise 4"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(colorspace)
+library(ggthemes)
+library(cowplot)
+```
+
+
+```{r load_data}
+
+# Filme von 1970 bis 2020, wenig Informationen pro Film
+raw_bechdel <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-09/raw_bechdel.csv')
+# Filme von 1970 bis 2013, viele Informationen, viele Informationen pro Film
+
+movies <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-09/movies.csv')
+```
+
+```{r}
+hcl_palettes(type = "qualitative", plot = T, n = 9)
+hcl_palettes("sequential (single-hue)", n = 7, plot = TRUE)
+```
+
+
+
+```{r}
+movies %>% ggplot() +
+  aes(x = year, y =  as.numeric(intgross)) +
+  geom_point() -> plot_1
+
+movies %>% ggplot() +
+  aes(x = year, y =  as.numeric(domgross), group = year) +
+  geom_boxplot() -> plot_2
+
+library(patchwork)
+
+(plot_1 + plot_2) / plot_2 +
+  plot_annotation(title = "My work")
+```
+
+
+
+```{r}
+# eigener Plot
+
+raw_bechdel %>% 
+  filter (year == 1970:2013) %>%
+    # weil imdb-Ratings in "movies" erst ab 1970 verfügbar sind 
+  ggplot() +
+  aes(x = year, y =  as.numeric(rating), color = rating) +
+  geom_count(aes(size = after_stat(n))) +
+  scale_size_area(max_size = 5) +
+  #geom_jitter() +
+  #scale_color_continuous_sequential(palette = "Emrld") +
+  # Farben hier eigentlich nicht nötig
+  labs(x = "Jahr", y = "Wert aus Bechdel-Test") -> plot_1
+
+movies %>% 
+  ggplot() +
+  aes(x = year, y =  as.numeric(imdb_rating), group = year, color = imdb_rating) +
+  geom_point() +
+  #scale_size_area(max_size = 2) +
+  #geom_jitter() +
+  scale_color_continuous_sequential(palette = "Purple-Orange") +
+  labs(x = "Jahr", y = "IMDB-Rating") -> plot_2
+
+library(patchwork)
+
+(plot_1 + plot_2) / plot_2 +
+  plot_annotation(title = "My work")
+
+
+```
+```{r}
+# eigener Plot
+
+raw_bechdel %>% 
+  filter (year == 1970:2013) %>%
+    # weil imdb-Ratings in "movies" erst ab 1970 verfügbar sind 
+  ggplot() +
+  aes(x = year, y =  as.numeric(rating), color = rating) +
+  geom_count(aes(size = after_stat(n))) +
+  scale_size_area(max_size = 5) +
+  #geom_jitter() +
+  #scale_color_continuous_sequential(palette = "Emrld") +
+  # Farben hier eigentlich nicht nötig
+  scale_y_continuous(expand = expansion(add = c(0.5, 0.5))) +
+  theme_minimal_grid(8) +
+  theme(plot.background = element_rect(fill = "aliceblue")) +
+  labs(x = "Jahr", y = "Wert aus Bechdel-Test") -> plot_1
+
+movies %>% 
+  ggplot() +
+  aes(x = year, y =  as.numeric(imdb_rating), group = year, color = imdb_rating) +
+  geom_point() +
+  #scale_size_area(max_size = 2) +
+  #geom_jitter() +
+  scale_color_continuous_sequential(palette = "Purple-Orange") +
+  theme_minimal_grid(8) +
+  theme(plot.background = element_rect(fill = "aliceblue")) +
+  theme(legend.box.background = element_rect(fill = "grey", color = "steelblue4"), legend.box.margin = margin(7, 7, 7, 7)) +
+  labs(x = "Jahr", y = "IMDB-Rating") -> plot_2
+
+library(patchwork)
+
+(plot_1 + plot_2) / plot_2 +
+  plot_annotation(title = "My work")
+```
+
