@@ -1,0 +1,81 @@
+---
+title: "Exercise 4"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(colorspace)
+library(ggthemes)
+```
+
+
+```{r load_data}
+
+# Filme von 1970 bis 2020, wenig Informationen pro Film
+raw_bechdel <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-09/raw_bechdel.csv')
+# Filme von 1970 bis 2013, viele Informationen, viele Informationen pro Film
+
+movies <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-09/movies.csv')
+```
+
+```{r}
+hcl_palettes(type = "qualitative", plot = T, n = 9)
+hcl_palettes("sequential (single-hue)", n = 7, plot = TRUE)
+```
+
+```{r}
+#Meine Lösung
+ggplot(movies) +
+  aes(x = year, y = fct_relevel(binary, "PASS", "FAIL"), group = year, color = binary) +
+  geom_jitter() +
+  scale_color_discrete_qualitative() +
+  labs (x = "Erscheinungsjahr",
+        y = "Bechdel-Test",
+        title = "Einflussfaktor: Erscheinungsjahr",
+        subtitle = "Jitter") -> plot_x
+
+ggplot(movies) +
+  aes(x = binary, y = as.numeric(budget), color = binary) +
+  geom_boxplot() +
+  scale_color_discrete_qualitative(palette = "Warm") +
+  labs (x = "Bechdel-Test",
+        y = "Budget", 
+        title = "Einflussfaktor: Budget", 
+        subtitle = "Boxplot") -> plot_y
+
+movies_noNA <- filter(movies, imdb_rating != "NA")
+ggplot(movies_noNA) +
+  aes(x = binary, y = imdb_rating, color = binary) +
+  geom_boxplot() +
+  scale_color_discrete_qualitative(palette = "Pastel 1") +
+  labs (x = "Bechdel-Test",
+        y = "imdb Rating",
+        title = "Einflussfaktor: imdb Rating",
+          subtitle = "Boxplot") -> plot_z
+
+library(patchwork)
+
+(plot_y + plot_z ) / plot_x +
+  plot_annotation(title = "Welche Faktoren haben einen Einfluss auf das Bestehen \ndes Bechdel-Tests?")
+
+```
+
+```{r}
+movies %>% ggplot() +
+  aes(x = year, y =  as.numeric(intgross)) +
+  geom_point() -> plot_1
+
+movies %>% ggplot() +
+  aes(x = year, y =  as.numeric(domgross), group = year) +
+  geom_boxplot() -> plot_2
+
+library(patchwork)
+
+(plot_1 + plot_2) / plot_2 +
+  plot_annotation(title = "My work")
+```
+
+
+
