@@ -71,7 +71,7 @@ ggplot(aes(intgross, fill=binary))+
   theme_minimal()+
   theme(legend.title = element_blank())+
   scale_fill_manual(values = c(FAIL= "#163832", PASS="#aaf0d1"))+
-  labs(x= "international gross in release year",y=NULL, title= "But as you can see here movies\nwhich fail the test in gerneral has\na higher international gross:")->plot_4
+  labs(x= "international gross in release year",y=NULL, title= "But as you can see here, movies\nwhich fail the test in gerneral has\na higher international gross:")->plot_4
   
   
 
@@ -93,7 +93,6 @@ plot_3+(plot_4/plot_5)+
 
 
 ```{r}
-```{r}
 #andere Ideen: 
 
 movies%>% 
@@ -103,6 +102,17 @@ movies%>%
   labs(x = "year", y = "number of movies")+
   theme_minimal()+
   labs(title = "To many films still don´t pass the Bechdel-Test", subtitle= "The bechdel test is passed if a movie has two women who talk to each other for more than 2 minutes about something other then a man")
+
+movies%>%
+  separate_rows(genre)%>%
+  filter(genre != "NA")%>%
+ggplot(aes(intgross, genre, fill=binary))+
+  geom_boxplot(alpha=.8)+
+  labs(x= "international gross in release year", y= "film genre")+
+  scale_x_log10(breaks = c(10000, 1000000, 100000000), labels= c("10k","1M", "100M"))+
+  theme_minimal()+
+  theme(legend.title = element_blank())+
+  scale_fill_manual(values = c(FAIL= "#163832", PASS="#aaf0d1"))
 
 
 movies%>%
