@@ -76,7 +76,8 @@ read_csv2(csv_path, skip = 7) %>% filter(X3 == 99) %>%
          AFD = Endgültig_21) %>% 
   pivot_longer(cols = -c(land, zweitstimmen)) %>% 
   group_by(land) %>% 
-  mutate(prozent = value / zweitstimmen) -> votes
+  mutate(prozent = value / zweitstimmen) %>% 
+  na.omit() -> votes
 
 
 geofacet::get_grid_names()
@@ -84,13 +85,13 @@ geofacet::get_grid_names()
 votes %>% ggplot() +
   aes(x = prozent, y = "YY", fill = name) +
   scale_fill_manual(
-    values = c(CDU = "#000000",
-               SPD = "#FF0000", 
-               LINKE = "#FF00FF",
-               GRUENE = "#00FF00",
-               CSU = "#000000",
-               FDP = "#FFFF00",
-               AFD = "#0088ff")) +
+    values = c(CDU = "#0C0C0C",
+               SPD = "#E4000F", 
+               LINKE = "#E90098",
+               GRUENE = "#65A22C",
+               CSU = "#0C0C0C",
+               FDP = "#FFFD01",
+               AFD = "#009DE0")) +
   geom_col() +
   coord_polar() +
   theme_void(8) +
