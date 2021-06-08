@@ -1,0 +1,183 @@
+---
+title: "Visualisierung der Bundestagswahl 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggforce)
+```
+
+
+# Daten laden
+```{r}
+
+#parties_bw <- c("CDU", "SPD", "GRÜNE", "FDP", "AfD", "DIE LINKE")
+#perc_votes_bw <- c(34.4, 16.4, 13.5, 12.7, 12.2, 6.4)
+
+#election_bw <- data.frame(parties_bw, perc_votes_bw)
+
+```
+
+
+# Daten anpassen 
+Daten werden gefiltert und sortiert
+```{r}
+# prepare pie data
+pie_data <- votes %>%
+  arrange(land, prozent) %>% # Tabelle nach Land und Wert sortiert
+  mutate(
+    end_angle = 2*pi*cumsum(prozent)/sum(prozent),   # ending angle for each pie slice
+    start_angle = lag(end_angle, default = 0),   # starting angle for each pie slice
+    mid_angle = 0.5*(start_angle + end_angle),   # middle of each pie slice, for text labels
+    # horizontal and vertical justifications for outer labels
+    hjust = ifelse(mid_angle > pi, 1, 0),
+    vjust = ifelse(mid_angle < pi/2 | mid_angle > 3*pi/2, 0, 1)
+  )
+pie_data
+
+```
+
+```{r}
+# je ein Datensatz pro Land
+pie_data_BW <- pie_data %>% filter(land == "Baden-Württemberg")
+pie_data_BAY <- pie_data %>% filter(land == "Bayern")
+pie_data_BER <- pie_data %>% filter(land == "Berlin")
+pie_data_BRA <- pie_data %>% filter(land == "Brandenburg")
+pie_data_BRE <- pie_data %>% filter(land == "Bremen")
+pie_data_HAM <- pie_data %>% filter(land == "Hamburg")
+pie_data_HES <- pie_data %>% filter(land == "Hessen")
+pie_data_MP <- pie_data %>% filter(land == "Mecklenburg-Vorpommern")
+pie_data_NIE <- pie_data %>% filter(land == "Niedersachsen")
+pie_data_NRW <- pie_data %>% filter(land == "Nordrhein-Westfalen")
+pie_data_RLP <- pie_data %>% filter(land == "Rheinland-Pfalz")
+pie_data_SAR <- pie_data %>% filter(land == "Saarland")
+pie_data_SAC <- pie_data %>% filter(land == "Sachsen")
+pie_data_SAN <- pie_data %>% filter(land == "Sachsen-Anhalt")
+pie_data_SLH <- pie_data %>% filter(land == "Schleswig-Holstein")
+pie_data_THU <- pie_data %>% filter(land == "Thüringen")
+```
+
+```{r}
+# hat nicht funktioniert
+# Plot BW
+
+plot_BW <- ggplot(pie_data_BW) +
+  aes(
+    x0 = 0, y0 = 0, r0 = 0.4, r =1,
+    start = start_angle, end = end_angle,
+    fill = name
+  ) +
+  geom_arc_bar() +
+  geom_text( # place amounts inside the pie
+    aes(
+      x = 0.7 * sin(mid_angle),
+      y = 0.7 * cos(mid_angle),
+      label = prozent)) +
+  geom_text ( # place party name outside the pie
+    aes(
+      x = 1.05 * sin(mid_angle),
+      y = 1.05 * cos(mid_angle),
+      label = name,
+      hjust = hjust, vjust = vjust)) +
+  scale_fill_manual(
+    values = c( CDU = "#0C0C0C", SPD = "#E4000F", AFD = "#009DE0", FDP = "#FEED01", GRUENE = "#65A22C", LINKE = "#E90098", CSU = "#87BBE6" ))
+
+plot_BW
+
+```
+
+```{r}
+# Code für Plot der einzelnen Bundesländer, Kürzel wurden entsprechend immer eingesetzt
+plot_THU <- 
+  ggplot(pie_data_THU) +
+  aes(
+    x0 = 1, y0 = 1, # position of pie center
+    r0 = 0, r = 2,  # inner and outer radius
+    amount = prozent, # size of pie slices
+    fill = name,
+    xaxt='n', ann = FALSE,
+    yaxt='n', ann = FALSE
+  ) + 
+  geom_arc_bar(stat = "pie") +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank()) +
+  scale_fill_manual(
+    values = c( CDU = "#0C0C0C", SPD = "#E4000F", AFD = "#009DE0", FDP = "#FEED01", GRUENE = "#65A22C", LINKE = "#E90098", CSU = "#87BBE6" )) +
+  coord_fixed(
+    xlim = c(-1, 3), ylim = c(-1, 3) )
+
+plot_THU
+
+```
+
+
+# Visualisierung mit transparentem Hintergrund speichern
+```{r}
+plot_THU <- plot_THU +
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+plot_THU
+
+ggsave(plot_THU, filename = "ergebnis_THU.png",  bg = "transparent")
+
+```
+
+```{r}
+Link zum fertigen Miroboard : "https://miro.com/app/board/o9J_lAznwI4=/"
+```
+
+
+# Automatisches Plotten mit geofacet
+```{r}
+# install.packages("geofacet")
+
+
+csv_path <- "https://www.bundeswahlleiter.de/dam/jcr/72f186bb-aa56-47d3-b24c-6a46f5de22d0/btw17_kerg.csv"
+
+library(geofacet)
+
+read_csv2(csv_path, skip = 7) %>% filter(X3 == 99) %>% 
+  select(land = X2, zweitstimmen = Endgültig_7,
+         CDU = Endgültig_9,
+         SPD = Endgültig_11,
+         LINKE = Endgültig_13,
+         GRUENE = Endgültig_15,
+         CSU = Endgültig_17,
+         FDP = Endgültig_19,
+         AFD = Endgültig_21) %>% 
+  pivot_longer(cols = -c(land, zweitstimmen)) %>% 
+  group_by(land) %>% 
+  mutate(prozent = value / zweitstimmen) -> votes
+
+
+geofacet::get_grid_names()
+
+votes %>% ggplot() +
+  aes(x = prozent, y = "YY", fill = name) +
+  scale_fill_manual(
+    values = c(CDU = "#000000",
+               SPD = "#FF0000", 
+               LINKE = "#FF00FF",
+               GRUENE = "#00FF00",
+               CSU = "#000000",
+               FDP = "#FFFF00",
+               AFD = "#0088ff")) +
+  geom_col() +
+  coord_polar() +
+  theme_void(8) +
+  geofacet::facet_geo(grid = "de_states_grid1", vars(land))
+
+
+
+```
+
