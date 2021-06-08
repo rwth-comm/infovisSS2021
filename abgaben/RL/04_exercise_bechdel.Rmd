@@ -77,7 +77,7 @@ library(patchwork)
 
 ```
 ```{r}
-# eigener Plot
+# eigener Plot mit Finetuning
 
 raw_bechdel %>% 
   filter (year == 1970:2013) %>%
