@@ -1,0 +1,1048 @@
+---
+title: "Visualisierung der Bundestagswahl 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+
+# Daten laden
+```{r}
+
+#Baden-Württemberg
+parties_bw <- c("CDU", "SPD", "GRÜNE", "FDP", "AFD", "LINKE")
+perc_votes_bw <- c(34.4, 16.4, 13.5, 12.7, 12.2, 6.4)
+
+
+#Bayern
+parties_by <- c("CSU", "SPD", "AFD", "FDP", "GRÜNE", "LINKE")
+perc_votes_by <- c(38.8, 15.3, 12.4, 10.2, 9.8, 6.1)
+
+
+#Berlin
+parties_b <- c("CDU", "LINKE", "SPD", "GRÜNE" , "AFD", "FDP")
+perc_votes_b <- c(22.7, 18.8, 17.9, 12.6, 12.0, 8.9)
+
+
+
+election_bw <- data.frame(parties_bw, perc_votes_bw)
+
+election_by <- data.frame(parties_by, perc_votes_by)
+
+election_b <- data.frame(parties_b, perc_votes_b)
+
+
+# Hessen
+parties_H <- c("CDU", "SPD", "AFD", "FDP", "GRÜNE", "LINKE")
+perc_votes_H <- c(30.9, 23.5, 11.9, 11.5, 9.7, 8.1)
+
+# Mecklenburg-Vorpommern
+
+parties_MV <- c("CDU", "AFD", "LINKE", "SPD", "FDP", "GRÜNE")
+perc_votes_MV <- c(33.1, 18.6, 17.8, 15.1, 6.2, 4.3)
+
+# Niedersachsen
+parties_NS <- c("CDU", "SPD", "FDP", "AFD", "GRÜNE", "LINKE")
+perc_votes_NS <- c(34.9, 27.4, 9.3, 9.1, 8.7, 7.0)
+
+election_H <- data.frame(parties_H, perc_votes_H)
+
+election_MV <- data.frame(parties_MV, perc_votes_MV)
+
+election_NS <- data.frame(parties_NS, perc_votes_NS)
+
+
+#Brandenburg
+
+parties_BR <- c("CDU", "AFD", "SPD", "LINKE", "FDP", "GRÜNE" )
+perc_votes_BR <- c(26.7, 20.2, 17.6, 17.2, 7.1, 5.0)
+
+election_BR <- data.frame(parties_BR, perc_votes_BR)
+
+#Bremen
+
+parties_bm <- c("SPD", "CDU", "LINKE", "GRÜNE", "AFD", "FDP")
+perc_votes_bm <- c(26.8, 25.1, 13.4, 11.1, 10.0, 9.3)
+
+election_bm <- data.frame(parties_bm, perc_votes_bm)
+  
+#Hamburg
+
+parties_HH <- c("CDU", "SPD", "GRÜNE", "LINKE", "FDP", "AFD")
+perc_votes_HH <- c(27.2, 23.5, 13.9, 12.2, 10.8, 7.8)
+
+election_HH <- data.frame(parties_HH, perc_votes_HH)
+
+#Nordrhein-Westfalen
+
+parties_NW <- c("CDU", "SPD", "FDP", "AFD", "GRÜNE", "LINKE")
+perc_votes_NW <- c(32.6, 26.0, 13.1, 9.4, 7.6, 7.5)
+
+election_NW <- data.frame(parties_NW, perc_votes_NW)
+
+#Rheinland-Pfalz
+
+parties_RP <- c("CDU", "SPD", "AFD", "FDP", "GRÜNE", "LINKE")
+perc_votes_RP <- c(35.9, 24.1, 11.2, 10.4, 7.6, 6.8)
+
+election_RP <- data.frame(parties_RP, perc_votes_RP)
+
+#Saarland
+
+parties_SL <- c("CDU", "SPD", "LINKE", "AFD", "FDP", "GRÜNE")
+perc_votes_SL <- c(32.4, 27.1, 12.9, 10.1, 7.6, 6.0)
+
+election_SL <- data.frame(parties_SL, perc_votes_SL)
+
+#Sachsen
+
+parties_S <- c("AFD","CDU", "LINKE", "SPD", "FDP", "GRÜNE")
+perc_votes_S <- c(27.0, 26.9, 16.1, 10.5, 8.2, 4.6)
+
+election_S <- data.frame(parties_S, perc_votes_S)
+
+#Sachsen-Anhalt
+
+parties_SA <- c("CDU","AFD", "LINKE", "SPD", "FDP", "GRÜNE")
+perc_votes_SA <- c(30.3, 19.6, 17.7, 15.2, 7.8, 3.7)
+  
+election_SA <- data.frame(parties_SA, perc_votes_SA)
+
+#Schleswig-Holstein
+
+parties_SH <- c("CDU", "SPD", "FDP", "GRÜNE", "AFD", "LINKE")
+perc_votes_SH <- c(34.0, 23.3, 12.6, 12.0, 8.2, 7.3)
+
+election_SH <- data.frame(parties_SH, perc_votes_SH)
+
+
+#Thüringen
+
+parties_T <- c("CDU", "AFD", "LINKE", "SPD", "FDP", "GRÜNE")
+perc_votes_T <- c(28.8, 22.7, 16.9, 13.2, 7.8, 4.1)
+
+election_T <- data.frame(parties_T, perc_votes_T)
+
+```
+
+
+# Daten anpassen 
+Daten werden gefiltert und sortiert
+```{r}
+
+
+pie_data_H <- election_H %>%
+  arrange(perc_votes_H) %>% # sort so pie slices end up sorted
+  mutate(
+    end_angle = 2*pi*cumsum(perc_votes_H)/sum(perc_votes_H),   # ending angle for each pie slice
+    start_angle = lag(end_angle, default = 0),   # starting angle for each pie slice
+    mid_angle = 0.5*(start_angle + end_angle),   # middle of each pie slice, for text labels
+    # horizontal and vertical justifications for outer labels
+    hjust = ifelse(mid_angle > pi, 1, 0),
+    vjust = ifelse(mid_angle < pi/2 | mid_angle > 3*pi/2, 0, 1)
+  )
+
+pie_data_MV <- election_MV %>%
+  arrange(perc_votes_MV) %>% # sort so pie slices end up sorted
+  mutate(
+    end_angle = 2*pi*cumsum(perc_votes_MV)/sum(perc_votes_MV),   # ending angle for each pie slice
+    start_angle = lag(end_angle, default = 0),   # starting angle for each pie slice
+    mid_angle = 0.5*(start_angle + end_angle),   # middle of each pie slice, for text labels
+    # horizontal and vertical justifications for outer labels
+    hjust = ifelse(mid_angle > pi, 1, 0),
+    vjust = ifelse(mid_angle < pi/2 | mid_angle > 3*pi/2, 0, 1)
+  )
+
+pie_data_NS <- election_NS %>%
+  arrange(perc_votes_NS) %>% # sort so pie slices end up sorted
+  mutate(
+    end_angle = 2*pi*cumsum(perc_votes_NS)/sum(perc_votes_NS),   # ending angle for each pie slice
+    start_angle = lag(end_angle, default = 0),   # starting angle for each pie slice
+    mid_angle = 0.5*(start_angle + end_angle),   # middle of each pie slice, for text labels
+    # horizontal and vertical justifications for outer labels
+    hjust = ifelse(mid_angle > pi, 1, 0),
+    vjust = ifelse(mid_angle < pi/2 | mid_angle > 3*pi/2, 0, 1)
+  )
+
+
+pie_data_bw <- election_bw %>%
+  arrange(perc_votes_bw) %>% # sort so pie slices end up sorted
+  mutate(
+    end_angle = 2*pi*cumsum(perc_votes_bw)/sum(perc_votes_bw),   # ending angle for each pie slice
+    start_angle = lag(end_angle, default = 0),   # starting angle for each pie slice
+    mid_angle = 0.5*(start_angle + end_angle),   # middle of each pie slice, for text labels
+    # horizontal and vertical justifications for outer labels
+    hjust = ifelse(mid_angle > pi, 1, 0),
+    vjust = ifelse(mid_angle < pi/2 | mid_angle > 3*pi/2, 0, 1)
+  )
+
+pie_data_by <- election_by %>%
+  arrange(perc_votes_by) %>% # sort so pie slices end up sorted
+  mutate(
+    end_angle = 2*pi*cumsum(perc_votes_by)/sum(perc_votes_by),   # ending angle for each pie slice
+    start_angle = lag(end_angle, default = 0),   # starting angle for each pie slice
+    mid_angle = 0.5*(start_angle + end_angle),   # middle of each pie slice, for text labels
+    # horizontal and vertical justifications for outer labels
+    hjust = ifelse(mid_angle > pi, 1, 0),
+    vjust = ifelse(mid_angle < pi/2 | mid_angle > 3*pi/2, 0, 1)
+  )
+
+pie_data_b <- election_b %>%
+  arrange(perc_votes_b) %>% # sort so pie slices end up sorted
+  mutate(
+    end_angle = 2*pi*cumsum(perc_votes_b)/sum(perc_votes_b),   # ending angle for each pie slice
+    start_angle = lag(end_angle, default = 0),   # starting angle for each pie slice
+    mid_angle = 0.5*(start_angle + end_angle),   # middle of each pie slice, for text labels
+    # horizontal and vertical justifications for outer labels
+    hjust = ifelse(mid_angle > pi, 1, 0),
+    vjust = ifelse(mid_angle < pi/2 | mid_angle > 3*pi/2, 0, 1)
+  )
+
+
+pie_data_BR <- election_BR %>%
+  arrange(perc_votes_BR) %>% # sort so pie slices end up sorted
+  mutate(
+    end_angle = 2*pi*cumsum(perc_votes_BR)/sum(perc_votes_BR),   # ending angle for each pie slice
+    start_angle = lag(end_angle, default = 0),   # starting angle for each pie slice
+    mid_angle = 0.5*(start_angle + end_angle),   # middle of each pie slice, for text labels
+    # horizontal and vertical justifications for outer labels
+    hjust = ifelse(mid_angle > pi, 1, 0),
+    vjust = ifelse(mid_angle < pi/2 | mid_angle > 3*pi/2, 0, 1)
+  )
+
+pie_data_bm <- election_bm %>%
+  arrange(perc_votes_bm) %>% # sort so pie slices end up sorted
+  mutate(
+    end_angle = 2*pi*cumsum(perc_votes_bm)/sum(perc_votes_bm),   # ending angle for each pie slice
+    start_angle = lag(end_angle, default = 0),   # starting angle for each pie slice
+    mid_angle = 0.5*(start_angle + end_angle),   # middle of each pie slice, for text labels
+    # horizontal and vertical justifications for outer labels
+    hjust = ifelse(mid_angle > pi, 1, 0),
+    vjust = ifelse(mid_angle < pi/2 | mid_angle > 3*pi/2, 0, 1)
+  )
+
+pie_data_HH <- election_HH %>%
+  arrange(perc_votes_HH) %>% # sort so pie slices end up sorted
+  mutate(
+    end_angle = 2*pi*cumsum(perc_votes_HH)/sum(perc_votes_HH),   # ending angle for each pie slice
+    start_angle = lag(end_angle, default = 0),   # starting angle for each pie slice
+    mid_angle = 0.5*(start_angle + end_angle),   # middle of each pie slice, for text labels
+    # horizontal and vertical justifications for outer labels
+    hjust = ifelse(mid_angle > pi, 1, 0),
+    vjust = ifelse(mid_angle < pi/2 | mid_angle > 3*pi/2, 0, 1)
+  )
+
+
+
+pie_data_NW <- election_NW %>%
+  arrange(perc_votes_NW) %>% # sort so pie slices end up sorted
+  mutate(
+    end_angle = 2*pi*cumsum(perc_votes_NW)/sum(perc_votes_NW),   # ending angle for each pie slice
+    start_angle = lag(end_angle, default = 0),   # starting angle for each pie slice
+    mid_angle = 0.5*(start_angle + end_angle),   # middle of each pie slice, for text labels
+    # horizontal and vertical justifications for outer labels
+    hjust = ifelse(mid_angle > pi, 1, 0),
+    vjust = ifelse(mid_angle < pi/2 | mid_angle > 3*pi/2, 0, 1)
+  )
+
+pie_data_RP <- election_RP %>%
+  arrange(perc_votes_RP) %>% # sort so pie slices end up sorted
+  mutate(
+    end_angle = 2*pi*cumsum(perc_votes_RP)/sum(perc_votes_RP),   # ending angle for each pie slice
+    start_angle = lag(end_angle, default = 0),   # starting angle for each pie slice
+    mid_angle = 0.5*(start_angle + end_angle),   # middle of each pie slice, for text labels
+    # horizontal and vertical justifications for outer labels
+    hjust = ifelse(mid_angle > pi, 1, 0),
+    vjust = ifelse(mid_angle < pi/2 | mid_angle > 3*pi/2, 0, 1)
+  )
+
+pie_data_SL <- election_SL %>%
+  arrange(perc_votes_SL) %>% # sort so pie slices end up sorted
+  mutate(
+    end_angle = 2*pi*cumsum(perc_votes_SL)/sum(perc_votes_SL),   # ending angle for each pie slice
+    start_angle = lag(end_angle, default = 0),   # starting angle for each pie slice
+    mid_angle = 0.5*(start_angle + end_angle),   # middle of each pie slice, for text labels
+    # horizontal and vertical justifications for outer labels
+    hjust = ifelse(mid_angle > pi, 1, 0),
+    vjust = ifelse(mid_angle < pi/2 | mid_angle > 3*pi/2, 0, 1)
+  )
+
+
+
+pie_data_S <- election_S %>%
+  arrange(perc_votes_S) %>% # sort so pie slices end up sorted
+  mutate(
+    end_angle = 2*pi*cumsum(perc_votes_S)/sum(perc_votes_S),   # ending angle for each pie slice
+    start_angle = lag(end_angle, default = 0),   # starting angle for each pie slice
+    mid_angle = 0.5*(start_angle + end_angle),   # middle of each pie slice, for text labels
+    # horizontal and vertical justifications for outer labels
+    hjust = ifelse(mid_angle > pi, 1, 0),
+    vjust = ifelse(mid_angle < pi/2 | mid_angle > 3*pi/2, 0, 1)
+  )
+
+pie_data_SA <- election_SA %>%
+  arrange(perc_votes_SA) %>% # sort so pie slices end up sorted
+  mutate(
+    end_angle = 2*pi*cumsum(perc_votes_SA)/sum(perc_votes_SA),   # ending angle for each pie slice
+    start_angle = lag(end_angle, default = 0),   # starting angle for each pie slice
+    mid_angle = 0.5*(start_angle + end_angle),   # middle of each pie slice, for text labels
+    # horizontal and vertical justifications for outer labels
+    hjust = ifelse(mid_angle > pi, 1, 0),
+    vjust = ifelse(mid_angle < pi/2 | mid_angle > 3*pi/2, 0, 1)
+  )
+
+pie_data_SH <- election_SH %>%
+  arrange(perc_votes_SH) %>% # sort so pie slices end up sorted
+  mutate(
+    end_angle = 2*pi*cumsum(perc_votes_SH)/sum(perc_votes_SH),   # ending angle for each pie slice
+    start_angle = lag(end_angle, default = 0),   # starting angle for each pie slice
+    mid_angle = 0.5*(start_angle + end_angle),   # middle of each pie slice, for text labels
+    # horizontal and vertical justifications for outer labels
+    hjust = ifelse(mid_angle > pi, 1, 0),
+    vjust = ifelse(mid_angle < pi/2 | mid_angle > 3*pi/2, 0, 1)
+  )
+
+pie_data_T <- election_T %>%
+  arrange(perc_votes_T) %>% # sort so pie slices end up sorted
+  mutate(
+    end_angle = 2*pi*cumsum(perc_votes_T)/sum(perc_votes_T),   # ending angle for each pie slice
+    start_angle = lag(end_angle, default = 0),   # starting angle for each pie slice
+    mid_angle = 0.5*(start_angle + end_angle),   # middle of each pie slice, for text labels
+    # horizontal and vertical justifications for outer labels
+    hjust = ifelse(mid_angle > pi, 1, 0),
+    vjust = ifelse(mid_angle < pi/2 | mid_angle > 3*pi/2, 0, 1)
+  )
+
+```
+
+
+Plots für das Bundesland generieren
+```{r}
+library(ggforce)
+
+plot_Hessen <- ggplot(pie_data_H) +
+  aes(
+    x0 = 0, y0 = 0, r0 = 0.4, r = 1,
+    start = start_angle, end = end_angle,
+    fill = parties_H
+  ) +
+  geom_arc_bar() +
+  geom_text( # place amounts inside the pie
+    aes(
+      x = 0.7 * sin(mid_angle),
+      y = 0.7 * cos(mid_angle),
+      label = perc_votes_H
+    )
+  ) +
+  geom_text( # place party name outside the pie
+    aes(
+      x = 1.05 * sin(mid_angle),
+      y = 1.05 * cos(mid_angle),
+      label = parties_H,
+      hjust = hjust, vjust = vjust
+    )
+  ) +
+  scale_fill_manual(values=c(CDU = "#0C0C0C", SPD = "#E4000F", AFD = "#009DE0", FDP = "#FEED01", GRÜNE = "#65A22C", LINKE = "#E90098")) +
+  coord_fixed(xlim = c(-1.8, 1.3))
+
+plot_Hessen
+
+```
+
+
+
+
+Plots für das Bundesland generieren
+```{r}
+library(ggforce)
+
+plot_Baden_Württemberg <- ggplot(pie_data_bw) +
+  aes(
+    x0 = 0, y0 = 0, r0 = 0.4, r = 1,
+    start = start_angle, end = end_angle,
+    fill = parties_bw
+  ) +
+  geom_arc_bar() +
+  geom_text( # place amounts inside the pie
+    aes(
+      x = 0.7 * sin(mid_angle),
+      y = 0.7 * cos(mid_angle),
+      label = perc_votes_bw
+    )
+  ) +
+  geom_text( # place party name outside the pie
+    aes(
+      x = 1.05 * sin(mid_angle),
+      y = 1.05 * cos(mid_angle),
+      label = parties_bw,
+      hjust = hjust, vjust = vjust
+    )
+  ) +
+  scale_fill_manual(values=c(CDU = "#0C0C0C", SPD = "#E4000F", AFD = "#009DE0", FDP = "#FEED01", GRÜNE = "#65A22C", LINKE = "#E90098")) +
+  coord_fixed(xlim = c(-1.8, 1.3))
+
+plot_Baden_Württemberg
+
+```
+
+```{r}
+plot_Bayern <- ggplot(pie_data_by) +
+  aes(
+    x0 = 0, y0 = 0, r0 = 0.4, r = 1,
+    start = start_angle, end = end_angle,
+    fill = parties_by
+  ) +
+  geom_arc_bar() +
+  geom_text( # place amounts inside the pie
+    aes(
+      x = 0.7 * sin(mid_angle),
+      y = 0.7 * cos(mid_angle),
+      label = perc_votes_by
+    )
+  ) +
+  geom_text( # place party name outside the pie
+    aes(
+      x = 1.05 * sin(mid_angle),
+      y = 1.05 * cos(mid_angle),
+      label = parties_by,
+      hjust = hjust, vjust = vjust
+    )
+  ) +
+  scale_fill_manual(values=c(CSU = "#0C0C0C", SPD = "#E4000F", AFD = "#009DE0", FDP = "#FEED01", GRÜNE = "#65A22C", LINKE = "#E90098")) +
+  coord_fixed(xlim = c(-1.8, 1.3))
+
+plot_Bayern
+```
+```{r}
+
+plot_Berlin <- ggplot(pie_data_b) +
+  aes(
+    x0 = 0, y0 = 0, r0 = 0.4, r = 1,
+    start = start_angle, end = end_angle,
+    fill = parties_b
+  ) +
+  geom_arc_bar() +
+  geom_text( # place amounts inside the pie
+    aes(
+      x = 0.7 * sin(mid_angle),
+      y = 0.7 * cos(mid_angle),
+      label = perc_votes_b
+    )
+  ) +
+  geom_text( # place party name outside the pie
+    aes(
+      x = 1.05 * sin(mid_angle),
+      y = 1.05 * cos(mid_angle),
+      label = parties_b,
+      hjust = hjust, vjust = vjust
+    )
+  ) +
+  scale_fill_manual(values=c(CDU = "#0C0C0C", SPD = "#E4000F", AFD = "#009DE0", FDP = "#FEED01", GRÜNE = "#65A22C", LINKE = "#E90098")) +
+  coord_fixed(xlim = c(-1.8, 1.3))
+
+plot_Berlin
+
+```
+
+
+```{r}
+plot_Mecklenburg_Vorpommern <- ggplot(pie_data_MV) +
+  aes(
+    x0 = 0, y0 = 0, r0 = 0.4, r = 1,
+    start = start_angle, end = end_angle,
+    fill = parties_MV
+  ) +
+  geom_arc_bar() +
+  geom_text( # place amounts inside the pie
+    aes(
+      x = 0.7 * sin(mid_angle),
+      y = 0.7 * cos(mid_angle),
+      label = perc_votes_MV
+    )
+  ) +
+  geom_text( # place party name outside the pie
+    aes(
+      x = 1.05 * sin(mid_angle),
+      y = 1.05 * cos(mid_angle),
+      label = parties_MV,
+      hjust = hjust, vjust = vjust
+    )
+  ) +
+  scale_fill_manual(values=c(CDU = "#0C0C0C", SPD = "#E4000F", AFD = "#009DE0", FDP = "#FEED01", GRÜNE = "#65A22C", LINKE = "#E90098")) +
+  coord_fixed(xlim = c(-1.8, 1.3))
+
+plot_Mecklenburg_Vorpommern
+
+```
+
+```{r}
+plot_Niedersachsen <- ggplot(pie_data_NS) +
+  aes(
+    x0 = 0, y0 = 0, r0 = 0.4, r = 1,
+    start = start_angle, end = end_angle,
+    fill = parties_NS
+  ) +
+  geom_arc_bar() +
+  geom_text( # place amounts inside the pie
+    aes(
+      x = 0.7 * sin(mid_angle),
+      y = 0.7 * cos(mid_angle),
+      label = perc_votes_NS
+    )
+  ) +
+  geom_text( # place party name outside the pie
+    aes(
+      x = 1.05 * sin(mid_angle),
+      y = 1.05 * cos(mid_angle),
+      label = parties_NS,
+      hjust = hjust, vjust = vjust
+    )
+  ) +
+  scale_fill_manual(values=c(CDU = "#0C0C0C", SPD = "#E4000F", AFD = "#009DE0", FDP = "#FEED01", GRÜNE = "#65A22C", LINKE = "#E90098")) +
+  coord_fixed(xlim = c(-1.8, 1.3))
+
+plot_Niedersachsen
+```
+
+```{r}
+plot_Brandenburg <- ggplot(pie_data_BR) +
+  aes(
+    x0 = 0, y0 = 0, r0 = 0.4, r = 1,
+    start = start_angle, end = end_angle,
+    fill = parties_BR
+  ) +
+  geom_arc_bar() +
+  geom_text( # place amounts inside the pie
+    aes(
+      x = 0.7 * sin(mid_angle),
+      y = 0.7 * cos(mid_angle),
+      label = perc_votes_BR
+    )
+  ) +
+  geom_text( # place party name outside the pie
+    aes(
+      x = 1.05 * sin(mid_angle),
+      y = 1.05 * cos(mid_angle),
+      label = parties_BR,
+      hjust = hjust, vjust = vjust
+    )
+  ) +
+  scale_fill_manual(values=c(CDU = "#0C0C0C", SPD = "#E4000F", AFD = "#009DE0", FDP = "#FEED01", GRÜNE = "#65A22C", LINKE = "#E90098")) +
+  coord_fixed(xlim = c(-1.8, 1.3))
+
+plot_Brandenburg
+```
+
+```{r}
+plot_Bremen <- ggplot(pie_data_bm) +
+  aes(
+    x0 = 0, y0 = 0, r0 = 0.4, r = 1,
+    start = start_angle, end = end_angle,
+    fill = parties_bm
+  ) +
+  geom_arc_bar() +
+  geom_text( # place amounts inside the pie
+    aes(
+      x = 0.7 * sin(mid_angle),
+      y = 0.7 * cos(mid_angle),
+      label = perc_votes_bm
+    )
+  ) +
+  geom_text( # place party name outside the pie
+    aes(
+      x = 1.05 * sin(mid_angle),
+      y = 1.05 * cos(mid_angle),
+      label = parties_bm,
+      hjust = hjust, vjust = vjust
+    )
+  ) +
+  scale_fill_manual(values=c(CDU = "#0C0C0C", SPD = "#E4000F", AFD = "#009DE0", FDP = "#FEED01", GRÜNE = "#65A22C", LINKE = "#E90098")) +
+  coord_fixed(xlim = c(-1.8, 1.3))
+
+plot_Bremen
+```
+
+```{r}
+plot_Hamburg <- ggplot(pie_data_HH) +
+  aes(
+    x0 = 0, y0 = 0, r0 = 0.4, r = 1,
+    start = start_angle, end = end_angle,
+    fill = parties_HH
+  ) +
+  geom_arc_bar() +
+  geom_text( # place amounts inside the pie
+    aes(
+      x = 0.7 * sin(mid_angle),
+      y = 0.7 * cos(mid_angle),
+      label = perc_votes_HH
+    )
+  ) +
+  geom_text( # place party name outside the pie
+    aes(
+      x = 1.05 * sin(mid_angle),
+      y = 1.05 * cos(mid_angle),
+      label = parties_HH,
+      hjust = hjust, vjust = vjust
+    )
+  ) +
+  scale_fill_manual(values=c(CDU = "#0C0C0C", SPD = "#E4000F", AFD = "#009DE0", FDP = "#FEED01", GRÜNE = "#65A22C", LINKE = "#E90098")) +
+  coord_fixed(xlim = c(-1.8, 1.3))
+
+plot_Hamburg
+
+```
+
+```{r}
+plot_Nordrhein_Westfalen <- ggplot(pie_data_NW) +
+  aes(
+    x0 = 0, y0 = 0, r0 = 0.4, r = 1,
+    start = start_angle, end = end_angle,
+    fill = parties_NW
+  ) +
+  geom_arc_bar() +
+  geom_text( # place amounts inside the pie
+    aes(
+      x = 0.7 * sin(mid_angle),
+      y = 0.7 * cos(mid_angle),
+      label = perc_votes_NW
+    )
+  ) +
+  geom_text( # place party name outside the pie
+    aes(
+      x = 1.05 * sin(mid_angle),
+      y = 1.05 * cos(mid_angle),
+      label = parties_NW,
+      hjust = hjust, vjust = vjust
+    )
+  ) +
+  scale_fill_manual(values=c(CDU = "#0C0C0C", SPD = "#E4000F", AFD = "#009DE0", FDP = "#FEED01", GRÜNE = "#65A22C", LINKE = "#E90098")) +
+  coord_fixed(xlim = c(-1.8, 1.3))
+
+plot_Nordrhein_Westfalen
+```
+
+```{r}
+plot_Rheinland_Pfalz <- ggplot(pie_data_RP) +
+  aes(
+    x0 = 0, y0 = 0, r0 = 0.4, r = 1,
+    start = start_angle, end = end_angle,
+    fill = parties_RP
+  ) +
+  geom_arc_bar() +
+  geom_text( # place amounts inside the pie
+    aes(
+      x = 0.7 * sin(mid_angle),
+      y = 0.7 * cos(mid_angle),
+      label = perc_votes_RP
+    )
+  ) +
+  geom_text( # place party name outside the pie
+    aes(
+      x = 1.05 * sin(mid_angle),
+      y = 1.05 * cos(mid_angle),
+      label = parties_RP,
+      hjust = hjust, vjust = vjust
+    )
+  ) +
+  scale_fill_manual(values=c(CDU = "#0C0C0C", SPD = "#E4000F", AFD = "#009DE0", FDP = "#FEED01", GRÜNE = "#65A22C", LINKE = "#E90098")) +
+  coord_fixed(xlim = c(-1.8, 1.3))
+
+plot_Rheinland_Pfalz
+```
+
+```{r}
+plot_Saarland <- ggplot(pie_data_SL) +
+  aes(
+    x0 = 0, y0 = 0, r0 = 0.4, r = 1,
+    start = start_angle, end = end_angle,
+    fill = parties_SL
+  ) +
+  geom_arc_bar() +
+  geom_text( # place amounts inside the pie
+    aes(
+      x = 0.7 * sin(mid_angle),
+      y = 0.7 * cos(mid_angle),
+      label = perc_votes_SL
+    )
+  ) +
+  geom_text( # place party name outside the pie
+    aes(
+      x = 1.05 * sin(mid_angle),
+      y = 1.05 * cos(mid_angle),
+      label = parties_SL,
+      hjust = hjust, vjust = vjust
+    )
+  ) +
+  scale_fill_manual(values=c(CDU = "#0C0C0C", SPD = "#E4000F", AFD = "#009DE0", FDP = "#FEED01", GRÜNE = "#65A22C", LINKE = "#E90098")) +
+  coord_fixed(xlim = c(-1.8, 1.3))
+
+plot_Saarland
+```
+
+```{r}
+plot_Sachsen <- ggplot(pie_data_S) +
+  aes(
+    x0 = 0, y0 = 0, r0 = 0.4, r = 1,
+    start = start_angle, end = end_angle,
+    fill = parties_S
+  ) +
+  geom_arc_bar() +
+  geom_text( # place amounts inside the pie
+    aes(
+      x = 0.7 * sin(mid_angle),
+      y = 0.7 * cos(mid_angle),
+      label = perc_votes_S
+    )
+  ) +
+  geom_text( # place party name outside the pie
+    aes(
+      x = 1.05 * sin(mid_angle),
+      y = 1.05 * cos(mid_angle),
+      label = parties_S,
+      hjust = hjust, vjust = vjust
+    )
+  ) +
+  scale_fill_manual(values=c(CDU = "#0C0C0C", SPD = "#E4000F", AFD = "#009DE0", FDP = "#FEED01", GRÜNE = "#65A22C", LINKE = "#E90098")) +
+  coord_fixed(xlim = c(-1.8, 1.3))
+
+plot_Sachsen
+```
+
+```{r}
+plot_Sachsen_Anhalt <- ggplot(pie_data_SA) +
+  aes(
+    x0 = 0, y0 = 0, r0 = 0.4, r = 1,
+    start = start_angle, end = end_angle,
+    fill = parties_SA
+  ) +
+  geom_arc_bar() +
+  geom_text( # place amounts inside the pie
+    aes(
+      x = 0.7 * sin(mid_angle),
+      y = 0.7 * cos(mid_angle),
+      label = perc_votes_SA
+    )
+  ) +
+  geom_text( # place party name outside the pie
+    aes(
+      x = 1.05 * sin(mid_angle),
+      y = 1.05 * cos(mid_angle),
+      label = parties_SA,
+      hjust = hjust, vjust = vjust
+    )
+  ) +
+  scale_fill_manual(values=c(CDU = "#0C0C0C", SPD = "#E4000F", AFD = "#009DE0", FDP = "#FEED01", GRÜNE = "#65A22C", LINKE = "#E90098")) +
+  coord_fixed(xlim = c(-1.8, 1.3))
+
+plot_Sachsen_Anhalt
+```
+
+```{r}
+plot_Schleswig_Holstein <- ggplot(pie_data_SH) +
+  aes(
+    x0 = 0, y0 = 0, r0 = 0.4, r = 1,
+    start = start_angle, end = end_angle,
+    fill = parties_SH
+  ) +
+  geom_arc_bar() +
+  geom_text( # place amounts inside the pie
+    aes(
+      x = 0.7 * sin(mid_angle),
+      y = 0.7 * cos(mid_angle),
+      label = perc_votes_SH
+    )
+  ) +
+  geom_text( # place party name outside the pie
+    aes(
+      x = 1.05 * sin(mid_angle),
+      y = 1.05 * cos(mid_angle),
+      label = parties_SH,
+      hjust = hjust, vjust = vjust
+    )
+  ) +
+  scale_fill_manual(values=c(CDU = "#0C0C0C", SPD = "#E4000F", AFD = "#009DE0", FDP = "#FEED01", GRÜNE = "#65A22C", LINKE = "#E90098")) +
+  coord_fixed(xlim = c(-1.8, 1.3))
+
+plot_Schleswig_Holstein
+```
+
+```{r}
+plot_Thueringen <- ggplot(pie_data_T) +
+  aes(
+    x0 = 0, y0 = 0, r0 = 0.4, r = 1,
+    start = start_angle, end = end_angle,
+    fill = parties_T
+  ) +
+  geom_arc_bar() +
+  geom_text( # place amounts inside the pie
+    aes(
+      x = 0.7 * sin(mid_angle),
+      y = 0.7 * cos(mid_angle),
+      label = perc_votes_T
+    )
+  ) +
+  geom_text( # place party name outside the pie
+    aes(
+      x = 1.05 * sin(mid_angle),
+      y = 1.05 * cos(mid_angle),
+      label = parties_T,
+      hjust = hjust, vjust = vjust
+    )
+  ) +
+  scale_fill_manual(values=c(CDU = "#0C0C0C", SPD = "#E4000F", AFD = "#009DE0", FDP = "#FEED01", GRÜNE = "#65A22C", LINKE = "#E90098")) +
+  coord_fixed(xlim = c(-1.8, 1.3))
+
+plot_Thueringen
+```
+
+
+# Visualisierung mit transparentem Hintergrund speichern
+
+
+```{r}
+plot_Hessen_transparent <- plot_Hessen +
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+plot_Hessen_transparent
+
+ggsave(plot_Hessen_transparent, filename = "ergebnis_Hessen.png",  bg = "transparent")
+
+
+plot_Mecklenburg_Vorpommern_transparent <- plot_Mecklenburg_Vorpommern +
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+plot_Mecklenburg_Vorpommern_transparent
+
+ggsave(plot_Mecklenburg_Vorpommern_transparent, filename = "ergebnis_Mecklenburg_Vorpommern.png",  bg = "transparent")
+
+
+plot_Niedersachsen_transparent <- plot_Niedersachsen +
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+plot_Niedersachsen_transparent
+
+ggsave(plot_Niedersachsen_transparent, filename = "ergebnis_Niedersachsen.png",  bg = "transparent")
+
+
+plot_Baden_Württemberg_transparent <- plot_Baden_Württemberg +
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+plot_Baden_Württemberg_transparent
+
+ggsave(plot_Baden_Württemberg_transparent, filename = "ergebnis_Baden_Württemberg.png",  bg = "transparent")
+
+
+plot_Bayern_transparent <- plot_Bayern +
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+plot_Bayern_transparent
+
+ggsave(plot_Bayern_transparent, filename = "ergebnis_Bayern.png",  bg = "transparent")
+
+
+plot_Berlin_transparent <- plot_Berlin +
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+plot_Berlin_transparent
+
+ggsave(plot_Berlin_transparent, filename = "ergebnis_Berlin.png",  bg = "transparent")
+
+
+plot_Brandenburg_transparent <- plot_Brandenburg +
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+plot_Brandenburg_transparent
+
+ggsave(plot_Brandenburg_transparent, filename = "ergebnis_Brandenburg.png",  bg = "transparent")
+
+
+plot_Bremen_transparent <- plot_Bremen +
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+plot_Bremen_transparent
+
+ggsave(plot_Bremen_transparent, filename = "ergebnis_Bremen.png",  bg = "transparent")
+
+
+
+plot_Hamburg_transparent <- plot_Hamburg +
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+plot_Hamburg_transparent
+
+ggsave(plot_Hamburg_transparent, filename = "ergebnis_Hamburg.png",  bg = "transparent")
+
+
+plot_Nordrhein_Westfalen_transparent <- plot_Nordrhein_Westfalen +
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+plot_Nordrhein_Westfalen_transparent
+
+ggsave(plot_Nordrhein_Westfalen_transparent, filename = "ergebnis_Nordrhein_Westfalen.png",  bg = "transparent")
+
+
+plot_Rheinland_Pfalz_transparent <- plot_Rheinland_Pfalz +
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+plot_Rheinland_Pfalz_transparent
+
+ggsave(plot_Rheinland_Pfalz_transparent, filename = "ergebnis_Rheinland_Pfalz.png",  bg = "transparent")
+
+
+
+plot_Saarland_transparent <- plot_Saarland +
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+plot_Saarland_transparent
+
+ggsave(plot_Saarland_transparent, filename = "ergebnis_Saarland.png",  bg = "transparent")
+
+
+plot_Sachsen_transparent <- plot_Sachsen +
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+plot_Sachsen_transparent
+
+ggsave(plot_Sachsen_transparent, filename = "ergebnis_Sachsen.png",  bg = "transparent")
+
+
+
+plot_Sachsen_Anhalt_transparent <- plot_Sachsen_Anhalt +
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+plot_Sachsen_Anhalt_transparent
+
+ggsave(plot_Sachsen_Anhalt_transparent, filename = "ergebnis_Sachsen_Anhalt.png",  bg = "transparent")
+
+
+
+plot_Schleswig_Holstein_transparent <- plot_Schleswig_Holstein +
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+plot_Schleswig_Holstein_transparent
+
+ggsave(plot_Schleswig_Holstein_transparent, filename = "ergebnis_Schleswig-Holstein.png",  bg = "transparent")
+
+
+
+plot_Thueringen_transparent <- plot_Thueringen +
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+plot_Thueringen_transparent
+
+ggsave(plot_Thueringen_transparent, filename = "ergebnis_Thueringen.png",  bg = "transparent")
+
+
+
+```
+
+
+# Automatisches Plotten mit geofacet
+```{r}
+#install.packages("geofacet")
+
+library(geofacet)
+
+get_grid_names()
+
+```
+
