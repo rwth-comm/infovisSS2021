@@ -13,7 +13,6 @@ library(ggforce)
 
 # Daten laden
 ```{r}
-
 Partei <- c("CDU", "SPD", "Grüne", "FDP", "AfD", "Linke")
 perc_votes <- c(23.3, 12.4)
 BW <- c(34.4, 16.4, 13.5, 12.7, 12.2, 6.4)
