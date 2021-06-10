@@ -9,8 +9,8 @@ library(tidyverse)
 library(ggforce)
 library(ggplot2)
 library(cowplot)
-library(extrafont)
-font_import()
+#library(extrafont)
+#font_import()
 ```
 
 
@@ -255,6 +255,16 @@ t_pie_data <- t_election %>%
     vjust = ifelse(mid_angle < pi/2 | mid_angle > 3*pi/2, 0, 1)
   )
 
+mv_pie_data <- mv_election %>%
+  arrange(mv_perc_votes) %>% # sort so pie slices end up sorted
+  mutate(
+    end_angle = 2*pi*cumsum(mv_perc_votes)/sum(mv_perc_votes),   # ending angle for each pie slice
+    start_angle = lag(end_angle, default = 0),   # starting angle for each pie slice
+    mid_angle = 0.5*(start_angle + end_angle),   # middle of each pie slice, for text labels
+    # horizontal and vertical justifications for outer labels
+    hjust = ifelse(mid_angle > pi, 1, 0),
+    vjust = ifelse(mid_angle < pi/2 | mid_angle > 3*pi/2, 0, 1)
+  )
 ```
 
 
@@ -268,13 +278,13 @@ p_bw <- ggplot(bw_pie_data)+
   geom_text(aes( #place amount inside the pie
       x = 0.7 * sin(mid_angle),
       y = 0.7 * cos(mid_angle),
-      label = bw_perc_votes, fill=bw_parties), colour= "white")+
+      label = bw_perc_votes, fill=bw_parties), colour= "white", size= 8)+
   geom_text(aes( #place names outside of the pie
       x = 1.05 * sin(mid_angle),
       y = 1.05 * cos(mid_angle),
       label = bw_parties,
-      hjust = hjust, vjust = vjust))+
-  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#FEED01", AfD= "#009DE0", Linke="#E90098"))+
+      hjust = hjust, vjust = vjust),size= 7)+
+  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#F3E03B", AfD= "#009DE0", Linke="#E90098"))+
   theme_void()+
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5, size = 28))+
@@ -290,13 +300,13 @@ p_bay <- ggplot(bay_pie_data)+
   geom_text(aes( #place amount inside the pie
       x = 0.7 * sin(mid_angle),
       y = 0.7 * cos(mid_angle),
-      label = bay_perc_votes, fill=bay_parties), colour= "white")+
+      label = bay_perc_votes, fill=bay_parties), colour= "white", size= 8)+
   geom_text(aes( #place names outside of the pie
       x = 1.05 * sin(mid_angle),
       y = 1.05 * cos(mid_angle),
       label = bay_parties,
-      hjust = hjust, vjust = vjust))+
-  scale_fill_manual(values= c(CSU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#FEED01", AfD= "#009DE0", Linke="#E90098"))+
+      hjust = hjust, vjust = vjust), size= 7)+
+  scale_fill_manual(values= c(CSU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#F3E03B", AfD= "#009DE0", Linke="#E90098"))+
   theme_void()+
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5, size = 28))+
@@ -314,13 +324,13 @@ p_t <- ggplot(t_pie_data)+
   geom_text(aes( #place amount inside the pie
       x = 0.7 * sin(mid_angle),
       y = 0.7 * cos(mid_angle),
-      label = t_perc_votes, fill=t_parties), colour= "white")+
+      label = t_perc_votes, fill=t_parties), colour= "white", size= 8)+
   geom_text(aes( #place names outside of the pie
       x = 1.05 * sin(mid_angle),
       y = 1.05 * cos(mid_angle),
       label = t_parties,
-      hjust = hjust, vjust = vjust))+
-  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#FEED01", AfD= "#009DE0", Linke="#E90098"))+
+      hjust = hjust, vjust = vjust), size= 7)+
+  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#F3E03B", AfD= "#009DE0", Linke="#E90098"))+
   theme_void()+
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5, size = 28))+
@@ -338,13 +348,13 @@ p_nrw <- ggplot(nrw_pie_data)+
   geom_text(aes( #place amount inside the pie
       x = 0.7 * sin(mid_angle),
       y = 0.7 * cos(mid_angle),
-      label = nrw_perc_votes, fill=nrw_parties), colour= "white")+
+      label = nrw_perc_votes, fill=nrw_parties), colour= "white", size= 8)+
   geom_text(aes( #place names outside of the pie
       x = 1.05 * sin(mid_angle),
       y = 1.05 * cos(mid_angle),
       label = nrw_parties,
-      hjust = hjust, vjust = vjust))+
-  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#FEED01", AfD= "#009DE0", Linke="#E90098"))+
+      hjust = hjust, vjust = vjust), size= 7)+
+  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#F3E03B", AfD= "#009DE0", Linke="#E90098"))+
   theme_void()+
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5, size = 28))+
@@ -364,13 +374,13 @@ p_s <- ggplot(s_pie_data)+
   geom_text(aes( #place amount inside the pie
       x = 0.7 * sin(mid_angle),
       y = 0.7 * cos(mid_angle),
-      label = s_perc_votes, fill=s_parties), colour= "white")+
+      label = s_perc_votes, fill=s_parties), colour= "white", size= 8)+
   geom_text(aes( #place names outside of the pie
       x = 1.05 * sin(mid_angle),
       y = 1.05 * cos(mid_angle),
       label = s_parties,
-      hjust = hjust, vjust = vjust))+
-  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#FEED01", AfD= "#009DE0", Linke="#E90098"))+
+      hjust = hjust, vjust = vjust), size= 7)+
+  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#F3E03B", AfD= "#009DE0", Linke="#E90098"))+
   theme_void()+
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5, size = 28))+
@@ -388,13 +398,13 @@ p_ber <- ggplot(ber_pie_data)+
   geom_text(aes( #place amount inside the pie
       x = 0.7 * sin(mid_angle),
       y = 0.7 * cos(mid_angle),
-      label = ber_perc_votes, fill=ber_parties), colour= "white")+
+      label = ber_perc_votes, fill=ber_parties), colour= "white", size= 8)+
   geom_text(aes( #place names outside of the pie
       x = 1.05 * sin(mid_angle),
       y = 1.05 * cos(mid_angle),
       label = bw_parties,
-      hjust = hjust, vjust = vjust))+
-  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#FEED01", AfD= "#009DE0", Linke="#E90098"))+
+      hjust = hjust, vjust = vjust), size= 7)+
+  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#F3E03B", AfD= "#009DE0", Linke="#E90098"))+
   theme_void()+
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5, size = 28))+
@@ -412,13 +422,13 @@ p_bran <- ggplot(bran_pie_data)+
   geom_text(aes( #place amount inside the pie
       x = 0.7 * sin(mid_angle),
       y = 0.7 * cos(mid_angle),
-      label = bran_perc_votes, fill=bran_parties), colour= "white")+
+      label = bran_perc_votes, fill=bran_parties), colour= "white", size= 8)+
   geom_text(aes( #place names outside of the pie
       x = 1.05 * sin(mid_angle),
       y = 1.05 * cos(mid_angle),
       label = bran_parties,
-      hjust = hjust, vjust = vjust))+
-  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#FEED01", AfD= "#009DE0", Linke="#E90098"))+
+      hjust = hjust, vjust = vjust), size= 7)+
+  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#F3E03B", AfD= "#009DE0", Linke="#E90098"))+
   theme_void()+
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5, size = 28))+
@@ -435,13 +445,13 @@ p_brem <- ggplot(brem_pie_data)+
   geom_text(aes( #place amount inside the pie
       x = 0.7 * sin(mid_angle),
       y = 0.7 * cos(mid_angle),
-      label = brem_perc_votes, fill=brem_parties), colour= "white")+
+      label = brem_perc_votes, fill=brem_parties), colour= "white", size= 8)+
   geom_text(aes( #place names outside of the pie
       x = 1.05 * sin(mid_angle),
       y = 1.05 * cos(mid_angle),
       label = brem_parties,
-      hjust = hjust, vjust = vjust))+
-  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#FEED01", AfD= "#009DE0", Linke="#E90098"))+
+      hjust = hjust, vjust = vjust), size= 7)+
+  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#F3E03B", AfD= "#009DE0", Linke="#E90098"))+
   theme_void()+
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5, size = 28))+
@@ -459,13 +469,13 @@ p_ham <- ggplot(ham_pie_data)+
   geom_text(aes( #place amount inside the pie
       x = 0.7 * sin(mid_angle),
       y = 0.7 * cos(mid_angle),
-      label = ham_perc_votes, fill=ham_parties), colour= "white")+
+      label = ham_perc_votes, fill=ham_parties), colour= "white", size= 8)+
   geom_text(aes( #place names outside of the pie
       x = 1.05 * sin(mid_angle),
       y = 1.05 * cos(mid_angle),
       label = ham_parties,
-      hjust = hjust, vjust = vjust))+
-  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#FEED01", AfD= "#009DE0", Linke="#E90098"))+
+      hjust = hjust, vjust = vjust), size= 7)+
+  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#F3E03B", AfD= "#009DE0", Linke="#E90098"))+
   theme_void()+
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5, size = 28))+
@@ -482,13 +492,13 @@ p_hes <- ggplot(hes_pie_data)+
   geom_text(aes( #place amount inside the pie
       x = 0.7 * sin(mid_angle),
       y = 0.7 * cos(mid_angle),
-      label = hes_perc_votes, fill=hes_parties), colour= "white")+
+      label = hes_perc_votes, fill=hes_parties), colour= "white", size= 8)+
   geom_text(aes( #place names outside of the pie
       x = 1.05 * sin(mid_angle),
       y = 1.05 * cos(mid_angle),
       label = hes_parties,
-      hjust = hjust, vjust = vjust))+
-  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#FEED01", AfD= "#009DE0", Linke="#E90098"))+
+      hjust = hjust, vjust = vjust), size= 7)+
+  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#F3E03B", AfD= "#009DE0", Linke="#E90098"))+
   theme_void()+
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5, size = 28))+
@@ -505,13 +515,13 @@ p_nied <- ggplot(nied_pie_data)+
   geom_text(aes( #place amount inside the pie
       x = 0.7 * sin(mid_angle),
       y = 0.7 * cos(mid_angle),
-      label = nied_perc_votes, fill=nied_parties), colour= "white")+
+      label = nied_perc_votes, fill=nied_parties), colour= "white", size= 8)+
   geom_text(aes( #place names outside of the pie
       x = 1.05 * sin(mid_angle),
       y = 1.05 * cos(mid_angle),
       label = nied_parties,
-      hjust = hjust, vjust = vjust))+
-  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#FEED01", AfD= "#009DE0", Linke="#E90098"))+
+      hjust = hjust, vjust = vjust), size= 7)+
+  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#F3E03B", AfD= "#009DE0", Linke="#E90098"))+
   theme_void()+
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5, size = 28))+
@@ -529,13 +539,13 @@ p_rpf <- ggplot(rpf_pie_data)+
   geom_text(aes( #place amount inside the pie
       x = 0.7 * sin(mid_angle),
       y = 0.7 * cos(mid_angle),
-      label = rpf_perc_votes, fill=rpf_parties), colour= "white")+
+      label = rpf_perc_votes, fill=rpf_parties), colour= "white", size= 8)+
   geom_text(aes( #place names outside of the pie
       x = 1.05 * sin(mid_angle),
       y = 1.05 * cos(mid_angle),
       label = rpf_parties,
-      hjust = hjust, vjust = vjust))+
-  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#FEED01", AfD= "#009DE0", Linke="#E90098"))+
+      hjust = hjust, vjust = vjust), size= 7)+
+  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#F3E03B", AfD= "#009DE0", Linke="#E90098"))+
   theme_void()+
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5, size = 28))+
@@ -552,13 +562,13 @@ p_saar <- ggplot(saar_pie_data)+
   geom_text(aes( #place amount inside the pie
       x = 0.7 * sin(mid_angle),
       y = 0.7 * cos(mid_angle),
-      label = saar_perc_votes, fill=saar_parties), colour= "white")+
+      label = saar_perc_votes, fill=saar_parties), colour= "white", size= 8)+
   geom_text(aes( #place names outside of the pie
       x = 1.05 * sin(mid_angle),
       y = 1.05 * cos(mid_angle),
       label = saar_parties,
-      hjust = hjust, vjust = vjust))+
-  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#FEED01", AfD= "#009DE0", Linke="#E90098"))+
+      hjust = hjust, vjust = vjust), size= 7)+
+  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#F3E03B", AfD= "#009DE0", Linke="#E90098"))+
   theme_void()+
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5, size = 28))+
@@ -574,13 +584,13 @@ p_sa <- ggplot(sa_pie_data)+
   geom_text(aes( #place amount inside the pie
       x = 0.7 * sin(mid_angle),
       y = 0.7 * cos(mid_angle),
-      label = sa_perc_votes, fill=sa_parties), colour= "white")+
+      label = sa_perc_votes, fill=sa_parties), colour= "white", size= 8)+
   geom_text(aes( #place names outside of the pie
       x = 1.05 * sin(mid_angle),
       y = 1.05 * cos(mid_angle),
       label = sa_parties,
-      hjust = hjust, vjust = vjust))+
-  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#FEED01", AfD= "#009DE0", Linke="#E90098"))+
+      hjust = hjust, vjust = vjust), size= 7)+
+  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#F3E03B", AfD= "#009DE0", Linke="#E90098"))+
   theme_void()+
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5, size = 28))+
@@ -598,13 +608,13 @@ p_sh <- ggplot(sh_pie_data)+
   geom_text(aes( #place amount inside the pie
       x = 0.7 * sin(mid_angle),
       y = 0.7 * cos(mid_angle),
-      label = sh_perc_votes, fill=rpf_parties), colour= "white")+
+      label = sh_perc_votes, fill=rpf_parties), colour= "white", size= 8)+
   geom_text(aes( #place names outside of the pie
       x = 1.05 * sin(mid_angle),
       y = 1.05 * cos(mid_angle),
       label = sh_parties,
-      hjust = hjust, vjust = vjust))+
-  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#FEED01", AfD= "#009DE0", Linke="#E90098"))+
+      hjust = hjust, vjust = vjust), size= 7)+
+  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#F3E03B", AfD= "#009DE0", Linke="#E90098"))+
   theme_void()+
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5, size = 28))+
@@ -621,13 +631,13 @@ p_mv <- ggplot(mv_pie_data)+
   geom_text(aes( #place amount inside the pie
       x = 0.7 * sin(mid_angle),
       y = 0.7 * cos(mid_angle),
-      label = mv_perc_votes, fill=mv_parties), colour= "white")+
+      label = mv_perc_votes, fill=mv_parties), colour= "white", size= 8)+
   geom_text(aes( #place names outside of the pie
       x = 1.05 * sin(mid_angle),
       y = 1.05 * cos(mid_angle),
       label = mv_parties,
-      hjust = hjust, vjust = vjust))+
-  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#FEED01", AfD= "#009DE0", Linke="#E90098"))+
+      hjust = hjust, vjust = vjust), size= 7)+
+  scale_fill_manual(values= c(CDU = "#0C0C0C", SPD= "#E4000F", Gruene= "#65A22C", FDP= "#F3E03B", AfD= "#009DE0", Linke="#E90098"))+
   theme_void()+
   theme(legend.position = "none",
         plot.title = element_text(hjust = 0.5, size = 28))+
@@ -644,15 +654,16 @@ p_mv
 
 # Visualisierung mit transparentem Hintergrund speichern
 ```{r}
+
+
 my_theme <-
   theme(
-    panel.background = element_rect(fill = "transparent"), # bg of the panel
-    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.background = element_rect(fill = "transparent", colour = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", colour = "transparent"), # bg of the plot
     panel.grid.major = element_blank(), # get rid of major grid
     panel.grid.minor = element_blank(), # get rid of minor grid
-    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
-    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
   )
+
 
 p_bw <- p_bw+ my_theme
 p_bay <- p_bay + my_theme
@@ -672,8 +683,12 @@ p_sh <- p_sh+ my_theme
 p_mv <-p_mv + my_theme
 
 
-
-
+#BACKUP
+#plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+#panel.grid.major = element_blank(), # get rid of major grid
+#panel.grid.minor = element_blank(), # get rid of minor grid
+#legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+#legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
 
 
 ggsave(p_bw, filename = "ergebnis_bw.png",  bg = "transparent")

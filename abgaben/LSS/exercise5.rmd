@@ -1,0 +1,137 @@
+---
+title: "Visualisierung der Bundestagswahl 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggforce)
+library(ggpubr)
+library(ggplot2)
+```
+Leider kann ich an der heutigen Sitzung nicht teilnehmen. Mein Problem: Der Hintergrund wurde nie transparent. Ich habe bei dem vorgegebenen Code selbst keinen Fehler entdeckt und habe ein paar Alternativen ausprobiert, das beste Ergebnis war allerdings leider nur ein Pie-Chart ohne Achsen. 
+
+# Daten laden
+```{r}
+
+parties <- c("CDU", "SPD", "Grüne", "Linke", "FDP", "AFD")
+perc_votes_NRW <- c(32.6, 26.0, 7.6, 7.5, 13.1, 9.4)
+perc_votes_RLP <- c(35.9, 24.1, 7.7, 7.4, 6.8, 11.2)
+perc_votes_SAR <- c(32.4, 27.1, 12.9, 6.0, 10.1, 7.6)
+perc_votes_BDW <- c(34.4, 16.4, 13.5, 6.4, 12.7, 12.2)
+perc_votes_BAY <- c(38.8, 15.3, 9.8, 6.1, 10.2, 12.4)
+perc_votes_BER <- c(22.7, 17.9, 12.6, 18.8, 8.9, 12.0)
+perc_votes_BRA <- c(26.7, 17.6, 5.0, 17.2, 7.1, 20.2)
+perc_votes_BRE <- c(25.1, 26.8, 11.1, 13.4, 9.3, 10.0)
+perc_votes_HAM <- c(27.2, 23.5, 13.9, 12.2, 10.8, 7.8)
+perc_votes_HES <- c(30.9, 23.5, 9.7, 8.1, 11.5, 11.9)
+perc_votes_MBV <- c(33.1, 15.1, 4.3, 17.8, 6.2, 18.6)
+perc_votes_NIE <- c(34.9, 27.4, 8.7, 7.0, 9.3, 9.1)
+perc_votes_SAC <- c(26.9, 10.5, 4.6, 16.1, 8.2, 27.0)
+perc_votes_SAA <- c(30.3, 15.2, 3.7, 17.7, 7.8, 19.6)
+perc_votes_SWH <- c(34.0, 23.3, 12.0, 7.3, 12.6, 8.2)
+perc_votes_THU <- c(28.8, 13.2, 4.1, 16.9, 7.8, 22.7)
+election_NRW <- data.frame(parties, perc_votes_NRW)
+election_RLP <- data.frame(parties, perc_votes_RLP)
+election_SAR <- data.frame(parties, perc_votes_SAR)
+election_BDW <- data.frame(parties, perc_votes_BDW)
+election_BAY <- data.frame(parties, perc_votes_BAY)
+election_BER <- data.frame(parties, perc_votes_BER)
+election_BRA <- data.frame(parties, perc_votes_BRA)
+election_BRE <- data.frame(parties, perc_votes_BRE)
+election_HAM <- data.frame(parties, perc_votes_HAM)
+election_HES <- data.frame(parties, perc_votes_HES)
+election_MBV <- data.frame(parties, perc_votes_MBV)
+election_NIE <- data.frame(parties, perc_votes_NIE)
+election_SAC <- data.frame(parties, perc_votes_SAC)
+election_SAA <- data.frame(parties, perc_votes_SAA)
+election_SWH <- data.frame(parties, perc_votes_SWH)
+election_THU <- data.frame(parties, perc_votes_THU)
+```
+
+
+# Daten anpassen 
+Daten werden gefiltert und sortiert
+```{r}
+pie_data_BRE <- election_BRE %>%
+  arrange(perc_votes_BRE) %>% # sort so pie slices end up sorted
+  mutate(
+    end_angle = 2*pi*cumsum(perc_votes_BRE)/sum(perc_votes_BRE),   # ending angle for each pie slice
+    start_angle = lag(end_angle, default = 0),   # starting angle for each pie slice
+    mid_angle = 0.5*(start_angle + end_angle),   # middle of each pie slice, for text labels
+    # horizontal and vertical justifications for outer labels
+    hjust = ifelse(mid_angle > pi, 1, 0),
+    vjust = ifelse(mid_angle < pi/2 | mid_angle > 3*pi/2, 0, 1))
+```
+
+
+Plots für das Bundesland generieren
+```{r}
+
+p <- election_BRE %>% ggplot()
+ggplot(pie_data_BRE) +
+  aes(
+    x0 = 0, y0 = 0, r0 = 0.4, r = 1,
+    start = start_angle, end = end_angle,
+    fill = parties
+  ) +
+  geom_arc_bar() +
+  geom_text( # place amounts inside the pie
+    aes(
+      x = 0.7 * sin(mid_angle),
+      y = 0.7 * cos(mid_angle),
+      label = perc_votes_BRE,
+      fill = parties),
+     colour = "white") +
+   
+  geom_text( # place party name outside the pie
+    aes(
+      x = 1.1 * sin(mid_angle),
+      y = 1.1 * cos(mid_angle),
+      label = parties,
+      hjust = hjust, vjust = vjust
+    )
+  ) +
+  scale_fill_manual(values = c(CDU = "#0C0C0C", SPD = "#E4000F", AFD = "#009DE0", FDP = "#FEED01", Grüne = "#65A22C", Linke = "#E90098")) +
+  coord_fixed(xlim = c(-1.8, 1.3)) 
+  #theme_transparent()
+
+p
+  #theme_void()
+  #par(bg="transparent")
+#ggsave("BAY.jpg") 
+
+```
+
+
+
+
+# Visualisierung mit transparentem Hintergrund speichern
+```{r}
+p <- p +
+  theme(
+    panel.background = element_rect(fill = "transparent"), # bg of the panel
+    plot.background = element_rect(fill = "transparent", color = NA), # bg of the plot
+    panel.grid.major = element_blank(), # get rid of major grid
+    panel.grid.minor = element_blank(), # get rid of minor grid
+    legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+    legend.box.background = element_rect(fill = "transparent") # get rid of legend panel bg
+  )
+p
+
+ggsave(p, filename = "ergebnis_NRW.png",  bg = "transparent")
+
+```
+
+
+# Automatisches Plotten mit geofacet
+```{r}
+# install.packages("geofacet")
+
+library(geofacet)
+
+get_grid_names()
+
+```
+
